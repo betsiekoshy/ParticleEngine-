@@ -28,7 +28,7 @@ implements GLEventListener
 	public static final GLUT	GLUT = new GLUT();
 	public static final Random	RANDOM = new Random();
 
-	//this represents three-dimensional vectors:
+	//this represents two-dimensional vectors:
 	Vec2f pos; 
 	Vec2f velocity; 
 	Vec2f color; 
