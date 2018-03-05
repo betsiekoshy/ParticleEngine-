@@ -29,9 +29,9 @@ implements GLEventListener
 	public static final Random	RANDOM = new Random();
 
 	//this represents three-dimensional vectors:
-	Vec3f pos; 
-	Vec3f velocity; 
-	Vec3f color; 
+	Vec2f pos; 
+	Vec2f velocity; 
+	Vec2f color; 
 	float timeItsAlive; 
 	float lifespan; 
 
