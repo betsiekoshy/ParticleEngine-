@@ -18,7 +18,7 @@ implements GLEventListener
 {
 
 
-	private ArrayList<Particle> particles = new ArrayList<Particle>(500);
+	//private ArrayList<Particle> particles = new ArrayList<Particle>(500);
 
 	public static final GLU		GLU = new GLU();
 	public static final GLUT	GLUT = new GLUT();
@@ -123,8 +123,8 @@ implements GLEventListener
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
 
-		glTranslatef(0.0f, 0.0f, -10.0f);
-		glScalef(2.0f, 2.0f, 2.0f);
+		gl.glTranslatef(0.0f, 0.0f, -10.0f);
+		gl.glScalef(2.0f, 2.0f, 2.0f);
 		//glu.gluOrtho2D(-2.0f, 2.0f, -2.0f, 2.0f);	// 2D translate and scale
 		
 
