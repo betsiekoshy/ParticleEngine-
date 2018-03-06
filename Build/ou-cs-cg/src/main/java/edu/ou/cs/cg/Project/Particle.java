@@ -102,14 +102,14 @@ public class Particle
     this.age ++;
 
     // If the age is greater than the particle's life
-    // Make it as dead
+    // Mark it as dead
     if(this.age > this.life)
     {
       this.isAlive = false;
     }
 
-    // Change the position of particleEffec
-    //TODO
+    // Change the position of particle
+    // TODO
 
   }
 

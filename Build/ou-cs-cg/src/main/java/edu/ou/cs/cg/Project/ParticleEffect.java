@@ -43,7 +43,7 @@ public class ParticleEffect
     // Initilize the Color array for RGB
     this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
 
-    // At the beginning, create 30 particles
+    // At the beginning, create all the particles
     if(i < NUMBER_OF_PARTICLES_OVERALL)
     {
       // Initialize and add randomized variables for all particles
@@ -67,17 +67,13 @@ public class ParticleEffect
       // Loops through the arraylist of particles
       for(Particle particle: particles)
       {
-        // Update the particle varaibles
+        // Update the particle varaibles (this is where the particle will move, etc)
         particle.update();
 
-        // Draw the particle
+        // Redraw the particle
         drawParticle(gl, particle);
       }
     }
-
-
-
-
   }
 
 
@@ -100,8 +96,12 @@ public class ParticleEffect
     // Gives the Particle a Random Size
     particle.setSize((rand.nextInt((this.maxSize - this.minSize) + 1) + this.minSize) / 1000.0);
 
+
+    // Gives the particle a random life
+    // TODO
+
     // Gives the Particle a random velocity
-    //TODO
+    // TODO
   }
 
 
