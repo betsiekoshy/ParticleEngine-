@@ -1,3 +1,6 @@
+package edu.ou.cs.cg.Project;
+
+import edu.ou.cs.cg.Project.ParticleEffect;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,27 +13,18 @@ import javax.media.opengl.glu.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
-import com.sun.org.apache.xerces.internal.impl.dv.xs.YearMonthDV;
 
 
-public final class Driver
-implements GLEventListener
+public final class Driver implements GLEventListener
 {
-
-
-	//private ArrayList<Particle> particles = new ArrayList<Particle>(500);
 
 	public static final GLU		GLU = new GLU();
 	public static final GLUT	GLUT = new GLUT();
 	public static final Random	RANDOM = new Random();
 
-	
-
-	
 
 	// State (internal) variables
 	private int				k = 0;		// Just an animation counter
-
 	private int				w;			// Canvas width
 	private int				h;			// Canvas height
 	private TextRenderer	renderer;
@@ -43,7 +37,7 @@ implements GLEventListener
 		GLCanvas		canvas = new GLCanvas(capabilities);
 		JFrame			frame = new JFrame("Particles");
 
-		canvas.setPreferredSize(new Dimension(800, 800));
+		canvas.setPreferredSize(new Dimension(750, 750));
 
 		frame.setBounds(50, 50, 600, 600);
 		frame.getContentPane().add(canvas);
@@ -65,7 +59,7 @@ implements GLEventListener
 	}
 
 	// Override Methods (GLEventListener)
-	
+
 
     public void		init(GLAutoDrawable drawable)
 	{
@@ -97,7 +91,7 @@ implements GLEventListener
 
 	private void	update()
 	{
-		k++;									
+		k++;
 	}
 
 	private void	render(GLAutoDrawable drawable)
@@ -106,13 +100,14 @@ implements GLEventListener
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
 
-		setProjection(gl);						// Use a coordinate system
+		//setProjection(gl);						// Use a coordinate system
 
-		
+		ParticleEffect particleEffect = new ParticleEffect(gl);
+
 	}
 
 	// Coordinate System
-	
+
 	private void	setProjection(GL2 gl)
 	{
 		GLU		glu = new GLU();
@@ -126,9 +121,9 @@ implements GLEventListener
 		gl.glTranslatef(0.0f, 0.0f, -10.0f);
 		gl.glScalef(2.0f, 2.0f, 2.0f);
 		//glu.gluOrtho2D(-2.0f, 2.0f, -2.0f, 2.0f);	// 2D translate and scale
-		
+
 
 	}
 
-	
+
 }
