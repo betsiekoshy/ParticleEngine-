@@ -11,7 +11,7 @@ import javax.media.opengl.glu.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
-
+import java.lang.Object;
 
 
 public class Particle
@@ -20,10 +20,17 @@ public class Particle
 
   private boolean isAlive;               //Checks to see if the particle is still alive
 
-  private Point2D.Double position;       // Position of the Particle
+ private Point2D.Double position;       // Position of the Particle
+    
+ private Point2D.Double newPosition;       // Position of the Particle
+    
 
-  private Double velocity;               // Velocity of the particle (how fast it is going)
+ private Double velocity;               // Velocity of the particle (how fast it is going)
 
+ private Double acceleration;
+
+
+    
   private double size;                   // How large the particle will be
   private int age;                       // Duration in seconds when the particle was created
   private int life;                      // How long the particle will 'live' for. When the particle is considered
@@ -33,12 +40,18 @@ public class Particle
   {
     this.isAlive = true;
     this.position = null;
+    this.newPosition = null;
     this.color = null;
     this.velocity = 0.0;
+    this.acceleration = 0.0;
     this.size = 0;
     this.age = 0;
     this.life = 0;
+    
+    
+    
   }
+
 
 
   /******************************************
@@ -53,6 +66,12 @@ public class Particle
   {
     this.position = position;
   }
+    
+    public void setNewPosition(Point2D.Double newPosition)
+    {
+        this.newPosition = newPosition;
+    }
+
 
   public void setSize(double size)
   {
@@ -94,7 +113,7 @@ public class Particle
 
 
   /*****************************************************
-        Method to uplade the position of the particle
+        Method to update the position of the particle
    *****************************************************/
   public void update()
   {
@@ -107,10 +126,62 @@ public class Particle
     {
       this.isAlive = false;
     }
-
+    
+    
+    
+/**
     // Change the position of particle
-    // TODO
+    this.velocity += 1;
+      
+      double xPos = this.position.getX();
+      double yPos = this.position.getY();
+      
+      xPos += -.001;
+      yPos += -.001;
+      
+    // Change position
+      Point2D.Double newP = new Point2D.Double(xPos, yPos);
+      this.setPosition(newP);
+ **/
+      //Change position
+      
+      if(newPosition != null)
+      {
+          checkBoundries();
+          this.setPosition(add(position,newPosition));
+      }
 
   }
+    
+    /*****************************************************
+     Method add 2 Point2D.Double values
+     *****************************************************/
+    public Point2D.Double add(Point2D.Double p1, Point2D.Double p2)
+    {
+        Point2D.Double newLocation = new Point2D.Double();
+        newLocation = new Point2D.Double(p1.getX() + p2.getX(), p1.getY() + p2.getY());
+        return newLocation;
+    }
+    
+    
+    /*****************************************************
+     Method for checking width and height constraints
+     *****************************************************/
+    private void checkBoundries()
+    {
+        if(position.getX() < -1.0 || position.getX() >  1.0)
+        {
+            setNewPosition(new Point2D.Double(newPosition.getX() * -1, newPosition.getY()));
+        }
+        
+        if(position.getY() < -1.0 || position.getY() >  1.0)
+        {
+            setNewPosition(new Point2D.Double(newPosition.getX(), newPosition.getY() * -1));
+        }
+
+        
+    }
+    
+   
 
 }
