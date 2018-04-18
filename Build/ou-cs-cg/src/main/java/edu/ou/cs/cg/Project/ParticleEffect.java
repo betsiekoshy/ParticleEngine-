@@ -1,12 +1,14 @@
 package edu.ou.cs.cg.Project;
 
 import edu.ou.cs.cg.Project.Particle;
+import edu.ou.cs.cg.Project.Buttons;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.Random;
 import java.util.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
@@ -38,19 +40,23 @@ public class ParticleEffect
   private double angle;                     // Angle to create the particle circle
   private double x;                         // Final x postion for the random particle
   private double y;                         // Final y postion for the random particle
-    
+
   private double boundaryX;                 // GL boundary X axis
   private double boundaryY;                 // GL boundary Y axis
-    
 
-  public ParticleEffect(GL2 gl)
+  private Buttons buttons;
+
+
+  public ParticleEffect(GL2 gl, Buttons buttons)
   {
+    this.buttons = buttons;
     // Initilize the Color array for RGB
-    this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
-      
+    //this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
+    this.RGB = buttons.getColors();
+
     // Initialize boundaries
     //boundaryX =
-      
+
     // At the beginning, create all the particles
     if(i < NUMBER_OF_PARTICLES_OVERALL)
     {
@@ -70,21 +76,21 @@ public class ParticleEffect
         drawParticle(gl, particle);
       }
     }
-    
+
     else
     {
       // Loops through the arraylist of particles
       for(Particle particle: particles)
       {
         // Update the particle varaibles (this is where the particle will move, etc)
-        particle.update();
+        particle.update(buttons);
 
         // Redraw the particle
         drawParticle(gl, particle);
       }
     }
-      
-      
+
+
   }
 
 
@@ -96,33 +102,45 @@ public class ParticleEffect
   {
     // Initlaize the Random varaible
     rand = new Random();
-      
-      double randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-      double randomY = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-      
-      double newRandomX = randomX * (.0055)* (rand.nextBoolean() ? -1 : 1);
-      double newRandomY = randomY * (.0055)* (rand.nextBoolean() ? -1 : 1);
+    boolean intersects = false;
+    double randomX = 0;
+    double randomY = 0;
+    double newRandomX = 0;
+    double newRandomY = 0;
+
+    do{
+      randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+      randomY = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+
+      newRandomX = randomX * (.0055)* (rand.nextBoolean() ? -1 : 1);
+      newRandomY = randomY * (.0055)* (rand.nextBoolean() ? -1 : 1);
+
+      ArrayList<Path2D.Double> buttonPaths = buttons.getButtonShapes();
+
+      for(Path2D.Double path: buttonPaths)
+      {
+        if(!path.contains(new Point2D.Double(randomX, randomY))){
+          intersects = true;
+        }
+      }
+    }while(!intersects);
 
     // Gives the Particle a Random Position between -1 to 1
     particle.setPosition(
                 new Point2D.Double(randomX, randomY));
-      
+
     //Gives the Particle a new Random Position between -1 to 1
     particle.setNewPosition(
                 new Point2D.Double(newRandomX, newRandomY));
 
     // Gives the Particle the Color Red, Green, or Blue
-    particle.setColor(RGB[rand.nextInt(3)]);
+    //particle.setColor(RGB[rand.nextInt(3)]);
+    particle.setColor(RGB[rand.nextInt(RGB.length)]);
 
     // Gives the Particle a Random Size
     particle.setSize((rand.nextInt((this.maxSize - this.minSize) + 1) + this.minSize) / 1000.0);
 
 
-    // Gives the particle a random life
-    // TODO
-
-    // Gives the Particle a random velocity
-    // TODO
   }
 
 
@@ -135,6 +153,7 @@ public class ParticleEffect
     // Set the color of the particle
     setColor(gl, particle.getColor());
 
+    ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
     // Begin drawing the circ;e
     gl.glBegin(GL.GL_TRIANGLE_FAN);
 
@@ -150,10 +169,12 @@ public class ParticleEffect
 
       // Draws the section
       gl.glVertex2d(x,y);
+      points.add(new Point2D.Double(x,y));
     }
 
     // Completed in drawing the particle
     gl.glEnd();
+    particle.setPoints(points);
   }
 
 

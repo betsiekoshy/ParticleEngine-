@@ -1,6 +1,7 @@
 package edu.ou.cs.cg.Project;
 
 import edu.ou.cs.cg.Project.ParticleEffect;
+import edu.ou.cs.cg.Project.Buttons;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -100,30 +101,10 @@ public final class Driver implements GLEventListener
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
 
-		//setProjection(gl);						// Use a coordinate system
 
-		ParticleEffect particleEffect = new ParticleEffect(gl);
-
-	}
-
-	// Coordinate System
-
-	private void	setProjection(GL2 gl)
-	{
-		GLU		glu = new GLU();
-
-		gl.glMatrixMode(GL2.GL_PROJECTION); // Prepare for matrix xform
-		gl.glLoadIdentity();                // Set to identity matrix
-
-		gl.glMatrixMode(GL2.GL_MODELVIEW);
-		gl.glLoadIdentity();
-
-		gl.glTranslatef(0.0f, 0.0f, -10.0f);
-		gl.glScalef(2.0f, 2.0f, 2.0f);
-		//glu.gluOrtho2D(-2.0f, 2.0f, -2.0f, 2.0f);	// 2D translate and scale
-
+		Buttons buttons = new Buttons(gl);
+		ParticleEffect particleEffect = new ParticleEffect(gl, buttons);
 
 	}
-
 
 }
