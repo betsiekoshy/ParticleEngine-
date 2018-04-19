@@ -22,11 +22,10 @@ import java.lang.Object;
 
 public class ParticleEffect
 {
-  public static final int NUMBER_OF_PARTICLES_OVERALL = 75;                      // Overall number of particles in the application
+  public static final int NUMBER_OF_PARTICLES_OVERALL = 100;                      // Overall number of particles in the application
 
-  private static ArrayList<Particle> particles = new ArrayList<Particle>(NUMBER_OF_PARTICLES_OVERALL);    // All the particles in the application
 
-  private Particle particle;                // Single particle
+  private static ArrayList<Particle> particles = new ArrayList<Particle>();    // All the particles in the application
 
   private Color[] RGB;                      // Default colors of the particles (Red, Green, or Blue)
 
@@ -41,30 +40,35 @@ public class ParticleEffect
   private double x;                         // Final x postion for the random particle
   private double y;                         // Final y postion for the random particle
 
-  private double boundaryX;                 // GL boundary X axis
-  private double boundaryY;                 // GL boundary Y axis
-
   private Buttons buttons;
+  private GL2 gl;
+
+  private Path2D.Double bounds;
 
 
-  public ParticleEffect(GL2 gl, Buttons buttons)
+  public ParticleEffect(GL2 gl, Buttons buttons, Path2D.Double bounds)
   {
+    //initalize variables
+    this.gl = gl;
     this.buttons = buttons;
+    this.bounds = bounds;
+
     // Initilize the Color array for RGB
     //this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
     this.RGB = buttons.getColors();
 
     // Initialize boundaries
-    //boundaryX =
-
     // At the beginning, create all the particles
-    if(i < NUMBER_OF_PARTICLES_OVERALL)
+    if(i < NUMBER_OF_PARTICLES_OVERALL )
     {
       // Initialize and add randomized variables for all particles
-      for(i = 0; i < NUMBER_OF_PARTICLES_OVERALL; i++)
+      for(i = 0; i < NUMBER_OF_PARTICLES_OVERALL ; i++)
       {
         // Create a single particle
-        particle = new Particle();
+        Particle particle = new Particle();
+
+        //store the bounds of the scrren
+        particle.setBounds(bounds);
 
         // Gives the particle random initial variables
         RandomizeParticle(particle);
@@ -73,10 +77,9 @@ public class ParticleEffect
         particles.add(particle);
 
         // Draw the particle
-        drawParticle(gl, particle);
+        drawParticle(particle);
       }
     }
-
     else
     {
       // Loops through the arraylist of particles
@@ -86,11 +89,31 @@ public class ParticleEffect
         particle.update(buttons);
 
         // Redraw the particle
-        drawParticle(gl, particle);
+        drawParticle(particle);
       }
     }
 
+  }
 
+  public void generateParticles(int numParticles)
+  {
+    for(i = 0; i < numParticles; i++)
+    {
+      // Create a single particle
+      Particle particle = new Particle();
+
+      // Set the bounds of the screen
+      particle.setBounds(bounds);
+
+      // Gives the particle random initial variables
+      RandomizeParticle(particle);
+
+      // Add particles to the ArrayList of particles
+      particles.add(particle);
+
+      // Draw the particle
+      drawParticle(particle);
+    }
   }
 
 
@@ -102,45 +125,66 @@ public class ParticleEffect
   {
     // Initlaize the Random varaible
     rand = new Random();
+
+    //get all the buttons
+    Point2D.Double[] buttonCenters = buttons.getAllCenterPoints();
+
+    //Check to see if any point is inside the button
     boolean intersects = false;
-    double randomX = 0;
-    double randomY = 0;
+
+    //New points for the particle
+    Point2D.Double center;
     double newRandomX = 0;
     double newRandomY = 0;
 
-    do{
-      randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-      randomY = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-
-      newRandomX = randomX * (.0055)* (rand.nextBoolean() ? -1 : 1);
-      newRandomY = randomY * (.0055)* (rand.nextBoolean() ? -1 : 1);
-
-      ArrayList<Path2D.Double> buttonPaths = buttons.getButtonShapes();
-
-      for(Path2D.Double path: buttonPaths)
-      {
-        if(!path.contains(new Point2D.Double(randomX, randomY))){
-          intersects = true;
-        }
-      }
-    }while(!intersects);
-
-    // Gives the Particle a Random Position between -1 to 1
-    particle.setPosition(
-                new Point2D.Double(randomX, randomY));
-
-    //Gives the Particle a new Random Position between -1 to 1
-    particle.setNewPosition(
-                new Point2D.Double(newRandomX, newRandomY));
+    // Gives the Particle a Random Size
+    //particle.setSize((rand.nextInt((this.maxSize - this.minSize) + 1) + this.minSize) / 1000.0);
+    particle.setSize(20 / 1000.0);
 
     // Gives the Particle the Color Red, Green, or Blue
     //particle.setColor(RGB[rand.nextInt(3)]);
     particle.setColor(RGB[rand.nextInt(RGB.length)]);
 
-    // Gives the Particle a Random Size
-    particle.setSize((rand.nextInt((this.maxSize - this.minSize) + 1) + this.minSize) / 1000.0);
+    // Gives a particle a mass
+    particle.setMass(((float)(4 / 3 * Math.PI * Math.pow(particle.getSize(), 3.0))));
 
 
+      //Calculates the starting center for the particle
+      //Random point on the top and bottom of the screen
+     double randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+     double randomY =  (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+     Point2D.Double randomYaxis = new Point2D.Double(randomX, randomY);
+
+     //Random point on the left and right of the screen
+     double randomX1 = (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+     double randomY1 = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+     Point2D.Double randomXaxis = new Point2D.Double(randomX1, randomY1);
+
+     //Randomly initalize new center
+     center = (rand.nextBoolean() ? randomXaxis : randomYaxis);
+
+
+     //if point spawns from the left side, moves the particle right
+     //if point spawns from the right side, moves the particle left
+    if(center.getX() <= -1 || center.getX() >= 1)
+    {
+        newRandomX = center.getX() * (.0055) * -1;
+        newRandomY = center.getY() * (.0055) * (rand.nextBoolean() ? -1 : 1);
+    }
+
+    //if point spawns from the top side, moves the particle bottom
+    //if point spawns from the right bottom, moves the particle top
+    if(center.getY() <= -1 || center.getY() >= 1)
+    {
+        newRandomX = center.getX() * (.0055) * (rand.nextBoolean() ? -1 : 1);
+        newRandomY = center.getY() * (.0055) * -1;
+    }
+
+    // Gives the Particle a Random Position between -1 to 1
+    particle.setPosition(center);
+
+    //Gives the Particle a new Random Position between -1 to 1
+    particle.setNewPosition(new Point2D.Double(newRandomX, newRandomY));
   }
 
 
@@ -148,7 +192,7 @@ public class ParticleEffect
   /**************************************************
          Creating the actual particle (circles)
    **************************************************/
-  private void drawParticle(GL2 gl, Particle particle)
+  private void drawParticle(Particle particle)
   {
     // Set the color of the particle
     setColor(gl, particle.getColor());
