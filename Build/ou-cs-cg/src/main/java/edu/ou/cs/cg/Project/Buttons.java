@@ -19,7 +19,6 @@ public final class Buttons
   private int sides = 18;
 
   private double size  = 0.14;
-  private double mass;
 
   private ArrayList<Path2D.Double> buttonShapes;
 
@@ -73,31 +72,20 @@ public final class Buttons
     return buttonShapes;
   }
 
-  public double getSize(){
-    return this.size;
-  }
-
-  public double getMass(){
-    return this.mass;
-  }
-
-
   public Buttons(GL2 gl)
   {
-    //generate mass for the button
-    this.mass = ((float)(4 / 3 * Math.PI * Math.pow(this.size, 3.0)));
-
     buttonShapes = new ArrayList<Path2D.Double>();
     drawButtons(gl);
   }
 
   private void drawButtons(GL2 gl)
   {
+    // Set the color of the particle
+
+
     for(int j = 0; j < centerPoints.length; j++)
     {
-      //set the color of the button
       setColor(gl, colors[j]);
-
       //Initalize array to create path2d.double
       ArrayList<Point2D.Double> shapePoints = new ArrayList<Point2D.Double>();
 
@@ -131,10 +119,8 @@ public final class Buttons
     }
   }
 
-
   private Path2D.Double createShape(ArrayList<Point2D.Double> shapePoints)
   {
-    //store the bounds of the button
     Path2D.Double result = new Path2D.Double();
 
     result.moveTo(shapePoints.get(0).getX(), shapePoints.get(0).getY());

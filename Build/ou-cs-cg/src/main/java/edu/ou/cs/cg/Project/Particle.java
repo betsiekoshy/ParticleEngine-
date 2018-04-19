@@ -25,8 +25,6 @@ public class Particle
 
   private Point2D.Double newPosition;       // Position of the Particle
 
-  private Point2D.Double speed;
-
   private ArrayList<Point2D.Double> points;
 
   private Double velocity;               // Velocity of the particle (how fast it is going)
@@ -34,11 +32,6 @@ public class Particle
   private Double acceleration;
 
   private double size;                   // How large the particle will be
-  private double mass;
-
-  private Path2D.Double bounds;
-  private boolean inside;
-
 
   private int age;                       // Duration in seconds when the particle was created
   private int life;                      // How long the particle will 'live' for. When the particle is considered
@@ -46,7 +39,6 @@ public class Particle
 
   public Particle()
   {
-    this.inside = false;
     this.isAlive = true;
     this.position = null;
     this.newPosition = null;
@@ -57,9 +49,6 @@ public class Particle
     this.age = 0;
     this.life = 0;
     this.points = new ArrayList<Point2D.Double>();
-    this.mass =0;
-    this.bounds = new Path2D.Double();
-    this.speed = new Point2D.Double( (Math.random() * 3.0) + 2.0, (Math.random() * 3.0)+2.0);
   }
 
 
@@ -70,11 +59,6 @@ public class Particle
   public void setColor(Color color)
   {
     this.color = color;
-  }
-
-  public void setBounds(Path2D.Double bounds)
-  {
-    this.bounds = bounds;
   }
 
   public void setPosition(Point2D.Double position)
@@ -92,10 +76,6 @@ public class Particle
     this.points = points;
   }
 
-  public void setMass(double mass)
-  {
-    this.mass = mass;
-  }
 
   public void setSize(double size)
   {
@@ -176,7 +156,6 @@ public class Particle
     private void checkBoundries(Buttons button)
     {
       Random rand = new Random();
-      if(bounds.contains(position) || inside){
         if(position.getX() < -1.0 || position.getX() >  1.0)
         {
             setNewPosition(new Point2D.Double(newPosition.getX() * -1, newPosition.getY()));
@@ -187,57 +166,8 @@ public class Particle
             setNewPosition(new Point2D.Double(newPosition.getX(), newPosition.getY() * -1));
         }
 
-        inside = true;
-      }
-
         ArrayList<Path2D.Double> buttonPaths = button.getButtonShapes();
-         Point2D.Double[] buttonCenters = button.getAllCenterPoints();
-        //
-        // for(int i = 0; i < buttonCenters.length; i ++)
-        // {
-        //   if (position.getX() + this.size + button.getSize() > buttonCenters[i].getX()
-        //     && position.getX() < buttonCenters[i].getX() + this.size + button.getSize()
-        //     && position.getY() + this.size + button.getSize() >  buttonCenters[i].getY()
-        //     && position.getY() < buttonCenters[i].getY() + this.size + button.getSize())
-        //     {
-        //       double x1 = ((position.getX() - buttonCenters[i].getX()) * (position.getX() - buttonCenters[i].getX()));
-        //       double y1 = ((position.getY() - buttonCenters[i].getY()) * (position.getY() - buttonCenters[i].getY()));
-        //
-        //       double distance = Math.sqrt(x1 + y1);
-        //
-        //       if (distance < this.size + button.getSize())
-        //       {
-        //
-        //         double collisionPointX = ((position.getX() * button.getSize()) + (buttonCenters[i].getX()* this.size)) / (this.size + button.getSize());
-        //         double collisionPointY = ((position.getY() * button.getSize()) + (buttonCenters[i].getY()* this.size)) / (this.size+ button.getSize());
-        //
-        //
-        //
-        //         double mass1 = this.mass;
-        //         double mass2 = button.getMass();
-        //
-        //         double speedX = this.speed.getX();
-        //         double speedY = this.speed.getY();
-        //
-        //         double val1 = this.mass - button.getMass();
-        //         double val2 = this.mass + button.getMass();
-        //
-        //
-        //         double newVelX1 = ((speedX * (mass1 - mass2)) / (mass1 + mass2));
-        //         double newVelY1 = ((speedY * (mass2 - mass1)) / (mass1 + mass2));
-        //
-        //         this.speed = new Point2D.Double(newVelX1,newVelY1);
-        //
-        //         double x = position.getX() + newVelY1;
-        //         double y = position.getY() + newVelX1;
-        //
-        //         System.out.println(newVelX1 + ", " + newVelY1);
-        //         setNewPosition(new Point2D.Double(x,y));
-        //
-        //
-        //       }
-        //     }
-        // }
+        Point2D.Double[] buttonCenters = button.getAllCenterPoints();
 
 
         for(int i = 0; i < buttonCenters.length; i ++)
