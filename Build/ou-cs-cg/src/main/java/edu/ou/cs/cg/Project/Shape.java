@@ -28,6 +28,8 @@ public final class Shape
 
   private boolean isActive;
 
+  private int drawingType;
+
 
   public Shape(int sides, Color color, Point2D.Double centerPoint)
   {
@@ -37,6 +39,7 @@ public final class Shape
     this.centerPoint = centerPoint;
     this.mass = ((float)(4 / 3 * Math.PI * Math.pow(this.size, 3.0)));
     this.isActive = true;
+    this.drawingType = 2;
 
   }
 
@@ -56,6 +59,16 @@ public final class Shape
   public double getSize()
   {
     return this.size;
+  }
+  
+  public void setDrawingType(int drawingType)
+  {
+    this.drawingType = drawingType;
+  }
+
+  public int getDrawingType()
+  {
+    return this.drawingType;
   }
 
   public double getMass()

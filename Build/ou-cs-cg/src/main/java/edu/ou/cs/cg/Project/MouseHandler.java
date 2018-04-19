@@ -4,6 +4,7 @@ package edu.ou.cs.cg.Project;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
+import java.util.ArrayList;
 
 public final class MouseHandler extends MouseAdapter
 {
@@ -13,6 +14,8 @@ public final class MouseHandler extends MouseAdapter
 
 	// State (internal) variables
 	private final Driver	driver;
+
+	private Point2D.Double initialClick = new Point2D.Double();
 
 	//**********************************************************************
 	// Constructors and Finalizer
@@ -48,12 +51,30 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mousePressed(MouseEvent e)
 	{
+		initialClick = calcCoordinatesIndriver(e.getX(), e.getY());
 
+		ArrayList<Shape> shapes = driver.buttons.getShapes();
+
+		for(Shape shape: shapes){
+			if(shape.getShapeBounds().contains(initialClick)){
+				shape.setDrawingType(6);
+			}
+		}
+
+		driver.buttons.setShapes(shapes);
 	}
 
 	public void		mouseReleased(MouseEvent e)
 	{
-		driver.particleEffect.generateParticles(50);
+		//driver.particleEffect.generateParticles(50);
+
+		ArrayList<Shape> shapes = driver.buttons.getShapes();
+
+		for(Shape shape: shapes){
+				shape.setDrawingType(2);
+		}
+
+		driver.buttons.setShapes(shapes);
 	}
 
 	//**********************************************************************

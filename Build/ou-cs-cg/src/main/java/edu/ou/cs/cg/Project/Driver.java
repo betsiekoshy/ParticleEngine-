@@ -37,7 +37,7 @@ public final class Driver implements GLEventListener
 	private final GLJPanel			canvas;
 	private final MouseHandler		mouseHandler;
 	private final FPSAnimator		animator;
-	public static final int				DEFAULT_FRAMES_PER_SECOND = 60;
+	private static final int				DEFAULT_FRAMES_PER_SECOND = 60;
 
 	// State (internal) variables
 	private int				k = 0;		// Just an animation counter

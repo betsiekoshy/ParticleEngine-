@@ -19,7 +19,6 @@ public final class Buttons
   private static int numButtons = 5;
   private double mass;
 
-  private ArrayList<Path2D.Double> buttonShapes;
   private static ArrayList<Shape>  shapes = new ArrayList<Shape>();
   private static ArrayList<Color> colorUsed = new ArrayList<Color>();
 
@@ -59,26 +58,14 @@ public final class Buttons
     3,
   };
 
-
-
   public Buttons(GL2 gl)
   {
-    //generate mass for the button
-    //Shape shape = new Shape();
-
-    buttonShapes = new ArrayList<Path2D.Double>();
-
     if(initial)
     {
         generateShapes();
         initial = false;
-
     }
-
-
     drawButtons(gl);
-
-
   }
 
   public void generateShapes()
@@ -108,9 +95,8 @@ public final class Buttons
       ArrayList<Point2D.Double> shapePoints = new ArrayList<Point2D.Double>();
 
       // Begin drawing
-      //gl.glBegin(GL.GL_TRIANGLE_FAN);
-      gl.glBegin(GL.GL_LINE_LOOP);
-
+      //gl.glBegin(GL.GL_TRIANGLE_FAN); //6
+      gl.glBegin(shape.getDrawingType()); // 2
 
       // Loops around in a circle depending on the sides set
       for(int i = 0; i <= shape.getSides(); i++)
@@ -137,43 +123,6 @@ public final class Buttons
       shape.setShapeBounds(shapeBounds);
 
     }
-    // for(int j = 0; j < centerPoints.length; j++)
-    // {
-    //   //set the color of the button
-    //   setColor(gl, colors[j]);
-    //
-    //
-    //   //Initalize array to create path2d.double
-    //   ArrayList<Point2D.Double> shapePoints = new ArrayList<Point2D.Double>();
-    //
-    //   // Begin drawing
-    //   //gl.glBegin(GL.GL_TRIANGLE_FAN);
-    //   gl.glBegin(GL.GL_LINE_LOOP);
-    //
-    //   // Loops around in a circle depending on the sides set
-    //   for(int i = 0; i <= this.sides; i++)
-    //   {
-    //     // Figure out the angle of the particle
-    //     Double angle = 2 * Math.PI * i / this.sides;
-    //
-    //     // Calculates the final x and y position of the particle
-    //     Double x = centerPoints[j].getX() + this.size * Math.cos(angle);
-    //     Double y = centerPoints[j].getY() + this.size * Math.sin(angle);
-    //
-    //     // Draws the section
-    //     gl.glVertex2d(x,y);
-    //
-    //     //add coordiate points to shapePoints
-    //     shapePoints.add(new Point2D.Double(x,y));
-    //   }
-    //   // Completed in drawing the particle
-    //   gl.glEnd();
-    //
-    //   //create the path2d.double with the shapes
-    //   Path2D.Double shape = createShape(shapePoints);
-    //
-    //   buttonShapes.add(shape);
-    // }
   }
 
 
@@ -204,15 +153,16 @@ public final class Buttons
     return colorUsed;
   }
 
-  public ArrayList<Path2D.Double> getButtonShapes()
-  {
-    return buttonShapes;
-  }
-
   public ArrayList<Shape> getShapes()
   {
     return this.shapes;
   }
+
+  public void setShapes(ArrayList<Shape> shapes)
+  {
+    this.shapes = shapes;;
+  }
+
 
 
   /**************************************************
