@@ -125,9 +125,6 @@ public class ParticleEffect
     // Initlaize the Random varaible
     rand = new Random();
 
-    //get all the buttons
-    Point2D.Double[] buttonCenters = buttons.getAllCenterPoints();
-
     //Check to see if any point is inside the button
     boolean intersects = false;
 
@@ -264,20 +261,18 @@ public class ParticleEffect
     }
 
     //Intialize lists of button centers and bounds
-    ArrayList<Path2D.Double> buttonPaths = buttons.getButtonShapes();
-    Point2D.Double[] buttonCenters = buttons.getAllCenterPoints();
+    ArrayList<Shape> shapes = buttons.getShapes();
 
-    //Loop through all shapes
-    for(int i = 0; i < buttonCenters.length; i ++)
+    for(Shape shape: shapes)
     {
       //Get all all points that create the bounds of the particle
       for(Point2D.Double point: particle.getPoints())
       {
         //Check if any point collids with the button bounds
-        if(buttonPaths.get(i).contains(point))
+        if(shape.getShapeBounds().contains(point))
         {
           //Set new position if particles collid with buttons
-          if (buttonCenters[i].getX() + buttons.getSize() >= point.getX())
+          if (shape.getCenter().getX() + shape.getSize() >= point.getX())
           {
             particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * - 1, particle.getNewPosition().getY()));
           }
@@ -286,7 +281,7 @@ public class ParticleEffect
             particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() , particle.getNewPosition().getY()));
           }
 
-          if (buttonCenters[i].getY() + buttons.getSize()>= point.getY())
+          if (shape.getCenter().getY() + shape.getSize()>= point.getY())
           {
             particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
           }
@@ -298,6 +293,7 @@ public class ParticleEffect
         }
       }
     }
+
   }
 
   /**************************************************

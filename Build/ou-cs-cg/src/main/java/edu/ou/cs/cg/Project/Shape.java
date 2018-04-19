@@ -24,6 +24,7 @@ public final class Shape
   private Color color;
 
   private Point2D.Double centerPoint;
+  private Path2D.Double shapeBounds;
 
   private boolean isActive;
 
@@ -38,6 +39,12 @@ public final class Shape
     this.isActive = true;
 
   }
+
+  public void setShapeBounds(Path2D.Double shapeBounds)
+  {
+    this.shapeBounds = shapeBounds;
+  }
+
   //**********************************************************************
 	// Public Class Methods (Event Handling)
 	//**********************************************************************
@@ -56,7 +63,7 @@ public final class Shape
     return this.mass;
   }
 
-  public Color getColors()
+  public Color getColor()
   {
     return color;
   }
@@ -70,5 +77,10 @@ public final class Shape
   {
     return isActive;
   }
+
+  public Path2D.Double getShapeBounds(){
+    return this.shapeBounds;
+  }
+
 
 }
