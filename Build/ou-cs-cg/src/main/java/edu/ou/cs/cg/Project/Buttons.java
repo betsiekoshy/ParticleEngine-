@@ -98,6 +98,7 @@ public final class Buttons
       //set the color of the button
       setColor(gl, colors[j]);
 
+
       //Initalize array to create path2d.double
       ArrayList<Point2D.Double> shapePoints = new ArrayList<Point2D.Double>();
 

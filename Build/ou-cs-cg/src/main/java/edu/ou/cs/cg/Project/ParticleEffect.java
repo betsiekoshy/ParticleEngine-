@@ -24,7 +24,6 @@ public class ParticleEffect
 {
   public static final int NUMBER_OF_PARTICLES_OVERALL = 100;                      // Overall number of particles in the application
 
-
   private static ArrayList<Particle> particles = new ArrayList<Particle>();    // All the particles in the application
 
   private Color[] RGB;                      // Default colors of the particles (Red, Green, or Blue)
@@ -86,7 +85,7 @@ public class ParticleEffect
       for(Particle particle: particles)
       {
         // Update the particle varaibles (this is where the particle will move, etc)
-        particle.update(buttons);
+        update(particle);
 
         // Redraw the particle
         drawParticle(particle);
@@ -148,24 +147,22 @@ public class ParticleEffect
     // Gives a particle a mass
     particle.setMass(((float)(4 / 3 * Math.PI * Math.pow(particle.getSize(), 3.0))));
 
+    //Calculates the starting center for the particle
+    //Random point on the top and bottom of the screen
+    double randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+    double randomY =  (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+    Point2D.Double randomYaxis = new Point2D.Double(randomX, randomY);
 
-      //Calculates the starting center for the particle
-      //Random point on the top and bottom of the screen
-     double randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-     double randomY =  (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-     Point2D.Double randomYaxis = new Point2D.Double(randomX, randomY);
+    //Random point on the left and right of the screen
+    double randomX1 = (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+    double randomY1 = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+    Point2D.Double randomXaxis = new Point2D.Double(randomX1, randomY1);
 
-     //Random point on the left and right of the screen
-     double randomX1 = (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-     double randomY1 = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-     Point2D.Double randomXaxis = new Point2D.Double(randomX1, randomY1);
+    //Randomly initalize new center
+    center = (rand.nextBoolean() ? randomXaxis : randomYaxis);
 
-     //Randomly initalize new center
-     center = (rand.nextBoolean() ? randomXaxis : randomYaxis);
-
-
-     //if point spawns from the left side, moves the particle right
-     //if point spawns from the right side, moves the particle left
+    //if point spawns from the left side, moves the particle right
+    //if point spawns from the right side, moves the particle left
     if(center.getX() <= -1 || center.getX() >= 1)
     {
         newRandomX = center.getX() * (.0055) * -1;
@@ -221,6 +218,87 @@ public class ParticleEffect
     particle.setPoints(points);
   }
 
+  /*****************************************************
+        Method to update the position of the particle
+   *****************************************************/
+  public void update(Particle particle)
+  {
+    checkBoundries(particle);
+    particle.setPosition(add(particle.getPosition(), particle.getNewPosition()));
+  }
+
+  /*****************************************************
+  Method add 2 Point2D.Double values
+  *****************************************************/
+  public Point2D.Double add(Point2D.Double p1, Point2D.Double p2)
+  {
+    Point2D.Double newLocation = new Point2D.Double();
+    newLocation = new Point2D.Double(p1.getX() + p2.getX(), p1.getY() + p2.getY());
+    return newLocation;
+  }
+
+  private void checkBoundries(Particle particle)
+  {
+    //Initialize random variable
+    Random rand = new Random();
+
+    //Check if particles is inside the screen
+    if(bounds.contains(particle.getPosition()) || particle.isInside())
+    {
+      // Check to see if the particle collides with the left or right side of the screen
+      if(particle.getPosition().getX() < -1.0 || particle.getPosition().getX() >  1.0)
+      {
+        // Reverse the direction of the x
+        particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * -1, particle.getNewPosition().getY()));
+      }
+
+      // Check to see if the particle collides with the top or bottom side of the screen
+      if(particle.getPosition().getY() < -1.0 || particle.getPosition().getY() >  1.0)
+      {
+        // Reverse the direction of the y
+        particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
+      }
+
+      // Particle is inside the screen
+      particle.setInside(true);
+    }
+
+    //Intialize lists of button centers and bounds
+    ArrayList<Path2D.Double> buttonPaths = buttons.getButtonShapes();
+    Point2D.Double[] buttonCenters = buttons.getAllCenterPoints();
+
+    //Loop through all shapes
+    for(int i = 0; i < buttonCenters.length; i ++)
+    {
+      //Get all all points that create the bounds of the particle
+      for(Point2D.Double point: particle.getPoints())
+      {
+        //Check if any point collids with the button bounds
+        if(buttonPaths.get(i).contains(point))
+        {
+          //Set new position if particles collid with buttons
+          if (buttonCenters[i].getX() + buttons.getSize() >= point.getX())
+          {
+            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * - 1, particle.getNewPosition().getY()));
+          }
+          else
+          {
+            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() , particle.getNewPosition().getY()));
+          }
+
+          if (buttonCenters[i].getY() + buttons.getSize()>= point.getY())
+          {
+            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
+          }
+          else
+          {
+            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY()));
+          }
+          break;
+        }
+      }
+    }
+  }
 
   /**************************************************
            Creating the colors of the particle
