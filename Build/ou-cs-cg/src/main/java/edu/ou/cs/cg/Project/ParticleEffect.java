@@ -22,7 +22,7 @@ import java.lang.Object;
 
 public class ParticleEffect
 {
-  public static final int NUMBER_OF_PARTICLES_OVERALL = 100;                      // Overall number of particles in the application
+  public static final int NUMBER_OF_PARTICLES_OVERALL = 200;                      // Overall number of particles in the application
 
   private static ArrayList<Particle> particles = new ArrayList<Particle>();    // All the particles in the application
 
