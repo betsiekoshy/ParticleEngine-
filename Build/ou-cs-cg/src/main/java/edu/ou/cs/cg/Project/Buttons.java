@@ -21,6 +21,7 @@ public final class Buttons
 
   private ArrayList<Path2D.Double> buttonShapes;
   private static ArrayList<Shape>  shapes = new ArrayList<Shape>();
+  private static ArrayList<Color> colorUsed = new ArrayList<Color>();
 
   private static boolean initial = true;
 
@@ -68,12 +69,12 @@ public final class Buttons
     if(initial)
     {
         generateShapes();
-            drawButtons(gl);
         initial = false;
-    }else{
-          drawButtons(gl);
+
     }
 
+
+    drawButtons(gl);
 
 
   }
@@ -84,7 +85,10 @@ public final class Buttons
 
     for(int i = 0; i < numButtons; i++){
       int k = rand.nextInt(colors.length);
-      System.out.println(sides[k] + ", " + colors[k] + ", " + centerPoints[i]);
+
+      if(!colorUsed.contains(colors[k])){
+        colorUsed.add(colors[k]);
+      }
 
       Shape shape = new Shape(sides[k], colors[k], centerPoints[i]);
       shapes.add(shape);
@@ -193,9 +197,9 @@ public final class Buttons
 	// Public Class Methods (Event Handling)
 	//**********************************************************************
 
-  public static Color[] getColors()
+  public static ArrayList<Color> getColors()
   {
-    return colors;
+    return colorUsed;
   }
 
   public ArrayList<Path2D.Double> getButtonShapes()

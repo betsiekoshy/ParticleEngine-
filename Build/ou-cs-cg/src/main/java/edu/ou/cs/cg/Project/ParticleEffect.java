@@ -26,7 +26,7 @@ public class ParticleEffect
 
   private static ArrayList<Particle> particles = new ArrayList<Particle>();    // All the particles in the application
 
-  private Color[] RGB;                      // Default colors of the particles (Red, Green, or Blue)
+  private ArrayList<Color> colors;                      // Default colors of the particles (Red, Green, or Blue)
 
   private static Random rand;               // For Random Number generator
 
@@ -54,7 +54,7 @@ public class ParticleEffect
 
     // Initilize the Color array for RGB
     //this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
-    this.RGB = buttons.getColors();
+    this.colors = buttons.getColors();
 
     // Initialize boundaries
     // At the beginning, create all the particles
@@ -139,7 +139,7 @@ public class ParticleEffect
 
     // Gives the Particle the Color Red, Green, or Blue
     //particle.setColor(RGB[rand.nextInt(3)]);
-    particle.setColor(RGB[rand.nextInt(RGB.length)]);
+    particle.setColor(colors.get(rand.nextInt(colors.size())));
 
     // Gives a particle a mass
     particle.setMass(((float)(4 / 3 * Math.PI * Math.pow(particle.getSize(), 3.0))));
