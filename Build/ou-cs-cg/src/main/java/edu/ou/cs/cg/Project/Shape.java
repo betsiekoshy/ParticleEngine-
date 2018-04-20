@@ -46,6 +46,7 @@ public final class Shape
     this.isActive = true;
     this.drawingType = 2;
     this.numCount = (10 + (int)(Math.random() * ((99 - 10) + 1)));
+    //this.numCount = (1 + (int)(Math.random() * ((9 - 1) + 1)));
     this.textColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
   }
 

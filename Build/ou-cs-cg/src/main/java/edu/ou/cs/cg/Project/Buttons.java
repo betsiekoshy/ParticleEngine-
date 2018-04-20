@@ -98,10 +98,16 @@ public final class Buttons
 
   private void drawButtons(GL2 gl)
   {
+    colorUsed = new ArrayList<Color>();
+
     for(Shape shape: this.shapes)
     {
       if(shape.isActive())
       {
+
+        if(!colorUsed.contains(shape.getColor())){
+          colorUsed.add(shape.getColor());
+        }
         //set the color of the button
         setColor(gl, shape.getColor());
         //Initalize array to create path2d.double

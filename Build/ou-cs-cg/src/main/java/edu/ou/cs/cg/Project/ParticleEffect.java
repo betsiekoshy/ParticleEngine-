@@ -22,7 +22,7 @@ import java.lang.Object;
 
 public class ParticleEffect
 {
-  public static final int NUMBER_OF_PARTICLES_OVERALL = 200;                      // Overall number of particles in the application
+  public static int NUMBER_OF_PARTICLES_OVERALL;                      // Overall number of particles in the application
 
   private static ArrayList<Particle> particles = new ArrayList<Particle>();    // All the particles in the application
 
@@ -44,6 +44,8 @@ public class ParticleEffect
 
   private Path2D.Double bounds;
 
+  private static boolean initial = true;
+
 
   public ParticleEffect(GL2 gl, Buttons buttons, Path2D.Double bounds)
   {
@@ -51,33 +53,42 @@ public class ParticleEffect
     this.gl = gl;
     this.buttons = buttons;
     this.bounds = bounds;
+    NUMBER_OF_PARTICLES_OVERALL = 0;
 
     // Initilize the Color array for RGB
     //this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
     this.colors = buttons.getColors();
 
+
     // Initialize boundaries
     // At the beginning, create all the particles
-    if(i < NUMBER_OF_PARTICLES_OVERALL )
+    if(initial)
     {
       // Initialize and add randomized variables for all particles
-      for(i = 0; i < NUMBER_OF_PARTICLES_OVERALL ; i++)
+      for(Shape shape: buttons.getShapes())
       {
-        // Create a single particle
-        Particle particle = new Particle();
+        for(int i = 0; i < shape.getNumCount(); i++)
+        {
+          // Create a single particle
+          Particle particle = new Particle();
 
-        //store the bounds of the scrren
-        particle.setBounds(bounds);
+          //store the bounds of the scrren
+          particle.setBounds(bounds);
 
-        // Gives the particle random initial variables
-        RandomizeParticle(particle);
+          // Gives the particle random initial variables
+          RandomizeParticle(particle);
 
-        // Add particles to the ArrayList of particles
-        particles.add(particle);
+          particle.setColor(shape.getColor());
 
-        // Draw the particle
-        drawParticle(particle);
+          // Add particles to the ArrayList of particles
+          particles.add(particle);
+
+          // Draw the particle
+          drawParticle(particle);
+
+        }
       }
+      initial = false;
     }
     else
     {
@@ -96,24 +107,33 @@ public class ParticleEffect
 
   }
 
-  public void generateParticles(int numParticles)
+  public void generateParticles()
   {
-    for(int i = 0; i < numParticles; i++)
+    particles = new ArrayList<Particle>();
+    for(Shape shape: buttons.getShapes())
     {
-      // Create a single particle
-      Particle particle = new Particle();
+      if(shape.isActive())
+      {
+        for(int i = 0; i < shape.getNumCount(); i++)
+        {
+          // Create a single particle
+          Particle particle = new Particle();
 
-      // Set the bounds of the screen
-      particle.setBounds(bounds);
+          //store the bounds of the scrren
+          particle.setBounds(bounds);
 
-      // Gives the particle random initial variables
-      RandomizeParticle(particle);
+          // Gives the particle random initial variables
+          RandomizeParticle(particle);
 
-      // Add particles to the ArrayList of particles
-      particles.add(particle);
+          particle.setColor(shape.getColor());
 
-      // Draw the particle
-      drawParticle(particle);
+          // Add particles to the ArrayList of particles
+          particles.add(particle);
+
+          // Draw the particle
+          drawParticle(particle);
+        }
+      }
     }
   }
 
@@ -139,22 +159,18 @@ public class ParticleEffect
     //particle.setSize((rand.nextInt((this.maxSize - this.minSize) + 1) + this.minSize) / 1000.0);
     particle.setSize(20 / 1000.0);
 
-    // Gives the Particle the Color Red, Green, or Blue
-    //particle.setColor(RGB[rand.nextInt(3)]);
-    particle.setColor(colors.get(rand.nextInt(colors.size())));
-
     // Gives a particle a mass
     particle.setMass(((float)(4 / 3 * Math.PI * Math.pow(particle.getSize(), 3.0))));
 
     //Calculates the starting center for the particle
     //Random point on the top and bottom of the screen
-    double randomX = rand.nextInt(200) / 100.0 ;
-    double randomY =  (200 + (int)(Math.random() * ((210 - 200) + 1))) / 100.0 ;
+    double randomX = (5 + (int)(Math.random() * ((195 - 5) + 1))) / 100.0 ;
+    double randomY =  (200 + (int)(Math.random() * ((205 - 200) + 1))) / 100.0 ;
     Point2D.Double randomYaxis = new Point2D.Double(randomX, randomY);
 
     //Random point on the left and right of the screen
-    double randomX1 = (200 + (int)(Math.random() * ((210 - 200) + 1))) / 100.0 ;
-    double randomY1 = rand.nextInt(200) / 100.0 ;
+    double randomX1 = (200 + (int)(Math.random() * ((205 - 200) + 1))) / 100.0 ;
+    double randomY1 =  (5 + (int)(Math.random() * ((195 - 5) + 1)))  / 100.0 ;
     Point2D.Double randomXaxis = new Point2D.Double(randomX1, randomY1);
 
     //Randomly initalize new center
@@ -222,10 +238,8 @@ public class ParticleEffect
    *****************************************************/
   public void update(Particle particle)
   {
-    if(!particle.isMovingToShape() && particle.isAlive())
-    {
-      checkBoundries(particle);
-    }
+
+    checkBoundries(particle);
 
     particle.setPosition(add(particle.getPosition(), particle.getNewPosition()));
   }
@@ -240,23 +254,22 @@ public class ParticleEffect
     return newLocation;
   }
 
+
   private void checkBoundries(Particle particle)
   {
-    //Initialize random variable
-    Random rand = new Random();
 
     //Check if particles is inside the screen
     if(bounds.contains(particle.getPosition()) || particle.isInside())
     {
       // Check to see if the particle collides with the left or right side of the screen
-      if(particle.getPosition().getX() <= 0 || particle.getPosition().getX() >=  2.0)
+      if(particle.getPosition().getX() < 0 || particle.getPosition().getX() >  2.0)
       {
         // Reverse the direction of the x
         particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * -1, particle.getNewPosition().getY()));
       }
 
       // Check to see if the particle collides with the top or bottom side of the screen
-      if(particle.getPosition().getY() <= 0 || particle.getPosition().getY() >=  2.0)
+      if(particle.getPosition().getY() < 0 || particle.getPosition().getY() >  2.0)
       {
         // Reverse the direction of the y
         particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
@@ -266,40 +279,42 @@ public class ParticleEffect
       particle.setInside(true);
     }
 
-    //Intialize lists of button centers and bounds
-    ArrayList<Shape> shapes = buttons.getShapes();
-
-    for(Shape shape: shapes)
+    if(!particle.isMovingToShape() && particle.isAlive())
     {
-      //Get all all points that create the bounds of the particle
-      for(Point2D.Double point: particle.getPoints())
-      {
-        //Check if any point collids with the button bounds
-        if(shape.getShapeBounds().contains(point) && shape.isActive())
+        //Intialize lists of button centers and bounds
+        ArrayList<Shape> shapes = buttons.getShapes();
+
+        for(Shape shape: shapes)
         {
-          //Set new position if particles collid with buttons
-          if (shape.getCenter().getX() + shape.getSize() >= point.getX())
+          //Get all all points that create the bounds of the particle
+          for(Point2D.Double point: particle.getPoints())
           {
-            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * - 1, particle.getNewPosition().getY()));
-          }
-          else
-          {
-            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() , particle.getNewPosition().getY()));
-          }
+            //Check if any point collids with the button bounds
+            if(shape.getShapeBounds().contains(point) && shape.isActive())
+            {
+              //Set new position if particles collid with buttons
+              if (shape.getCenter().getX() + shape.getSize() >= point.getX())
+              {
+                particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * - 1, particle.getNewPosition().getY()));
+              }
+              else
+              {
+                particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() , particle.getNewPosition().getY()));
+              }
 
-          if (shape.getCenter().getY() + shape.getSize()>= point.getY())
-          {
-            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
+              if (shape.getCenter().getY() + shape.getSize()>= point.getY())
+              {
+                particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
+              }
+              else
+              {
+                particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY()));
+              }
+              break;
+            }
           }
-          else
-          {
-            particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY()));
-          }
-          break;
         }
-      }
     }
-
   }
 
   public void moveTowardButton(Point2D.Double initialClick){
@@ -332,12 +347,14 @@ public class ParticleEffect
     						particle.setNewPosition(new Point2D.Double(currentX, currentY));
     					}
 
+
     					if(shape.getShapeBounds().contains(particle.getPosition()))
     					{
     						particle.setPosition(shape.getCenter());
-    						particle.setNewPosition(new Point2D.Double(0,0));
     						particle.setIsAlive(false);
-    						if(shape.getNumCount() != 0){
+
+    						if(shape.getNumCount() != 0)
+                {
     							shape.setNumCount(shape.getNumCount() - 1);
     						}else{
     							shape.setNumCount(0);
@@ -365,6 +382,37 @@ public class ParticleEffect
     		this.setParticles(aliveParticles);
   }
 
+  public void updateOnRelease()
+  {
+    boolean inside = false;
+    ArrayList<Shape> shapes = buttons.getShapes();
+    ArrayList<Particle> particles = this.getParticles();
+
+
+    for(Shape shape: shapes){
+        shape.setDrawingType(2);
+        shape.setTextColor(new Color(1f,1f,1f,1f));
+    }
+
+    for(Particle particle: particles)
+    {
+      particle.setIsMovingToShape(false);
+      if(bounds.contains(particle.getPosition()))
+      {
+        inside = true;
+      }
+
+    }
+
+    if(!inside){
+        this.generateParticles();
+    }
+
+    this.setParticles(particles);
+    buttons.setShapes(shapes);
+
+
+  }
   /**************************************************
            Creating the colors of the particle
       Either some are transparent or in full color

@@ -55,24 +55,18 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseReleased(MouseEvent e)
 	{
-		driver.particleEffect.generateParticles(20);
-
-		ArrayList<Shape> shapes = driver.buttons.getShapes();
-		ArrayList<Particle> particles = driver.particleEffect.getParticles();
-
-
-		for(Shape shape: shapes){
-				shape.setDrawingType(2);
-				shape.setTextColor(new Color(1f,1f,1f,1f));
+		driver.particleEffect.updateOnRelease();
+		boolean inside = false;
+		for(Particle particle: driver.particleEffect.getParticles()){
+			if(driver.bounds.contains(particle.getPosition())){
+				inside = true;
+			}
 		}
 
-		for(Particle particle: particles)
-		{
-				particle.setIsMovingToShape(false);
+		if(!inside){
+				driver.particleEffect.generateParticles();
 		}
 
-		driver.particleEffect.setParticles(particles);
-		driver.buttons.setShapes(shapes);
 	}
 
 	//**********************************************************************
