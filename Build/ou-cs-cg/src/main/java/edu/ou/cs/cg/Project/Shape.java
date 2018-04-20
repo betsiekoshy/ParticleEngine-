@@ -60,7 +60,7 @@ public final class Shape
   {
     return this.size;
   }
-  
+
   public void setDrawingType(int drawingType)
   {
     this.drawingType = drawingType;

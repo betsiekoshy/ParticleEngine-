@@ -88,7 +88,9 @@ public class ParticleEffect
         update(particle);
 
         // Redraw the particle
+
         drawParticle(particle);
+
       }
     }
 
@@ -96,7 +98,7 @@ public class ParticleEffect
 
   public void generateParticles(int numParticles)
   {
-    for(i = 0; i < numParticles; i++)
+    for(int i = 0; i < numParticles; i++)
     {
       // Create a single particle
       Particle particle = new Particle();
@@ -146,13 +148,13 @@ public class ParticleEffect
 
     //Calculates the starting center for the particle
     //Random point on the top and bottom of the screen
-    double randomX = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-    double randomY =  (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+    double randomX = rand.nextInt(200) / 100.0 ;
+    double randomY =  (200 + (int)(Math.random() * ((210 - 200) + 1))) / 100.0 ;
     Point2D.Double randomYaxis = new Point2D.Double(randomX, randomY);
 
     //Random point on the left and right of the screen
-    double randomX1 = (100 + (int)(Math.random() * ((110 - 100) + 1))) / 100.0 * (rand.nextBoolean() ? -1 : 1);
-    double randomY1 = rand.nextInt(100) / 100.0 * (rand.nextBoolean() ? -1 : 1);
+    double randomX1 = (200 + (int)(Math.random() * ((210 - 200) + 1))) / 100.0 ;
+    double randomY1 = rand.nextInt(200) / 100.0 ;
     Point2D.Double randomXaxis = new Point2D.Double(randomX1, randomY1);
 
     //Randomly initalize new center
@@ -160,7 +162,7 @@ public class ParticleEffect
 
     //if point spawns from the left side, moves the particle right
     //if point spawns from the right side, moves the particle left
-    if(center.getX() <= -1 || center.getX() >= 1)
+    if(center.getX() <= 0 || center.getX() >= 2)
     {
         newRandomX = center.getX() * (.0055) * -1;
         newRandomY = center.getY() * (.0055) * (rand.nextBoolean() ? -1 : 1);
@@ -168,7 +170,7 @@ public class ParticleEffect
 
     //if point spawns from the top side, moves the particle bottom
     //if point spawns from the right bottom, moves the particle top
-    if(center.getY() <= -1 || center.getY() >= 1)
+    if(center.getY() <= 0 || center.getY() >= 2)
     {
         newRandomX = center.getX() * (.0055) * (rand.nextBoolean() ? -1 : 1);
         newRandomY = center.getY() * (.0055) * -1;
@@ -220,7 +222,11 @@ public class ParticleEffect
    *****************************************************/
   public void update(Particle particle)
   {
-    checkBoundries(particle);
+    if(!particle.isMovingToShape() && particle.isAlive())
+    {
+      checkBoundries(particle);
+    }
+
     particle.setPosition(add(particle.getPosition(), particle.getNewPosition()));
   }
 
@@ -243,14 +249,14 @@ public class ParticleEffect
     if(bounds.contains(particle.getPosition()) || particle.isInside())
     {
       // Check to see if the particle collides with the left or right side of the screen
-      if(particle.getPosition().getX() < -1.0 || particle.getPosition().getX() >  1.0)
+      if(particle.getPosition().getX() <= 0 || particle.getPosition().getX() >=  2.0)
       {
         // Reverse the direction of the x
         particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * -1, particle.getNewPosition().getY()));
       }
 
       // Check to see if the particle collides with the top or bottom side of the screen
-      if(particle.getPosition().getY() < -1.0 || particle.getPosition().getY() >  1.0)
+      if(particle.getPosition().getY() <= 0 || particle.getPosition().getY() >=  2.0)
       {
         // Reverse the direction of the y
         particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
@@ -308,6 +314,16 @@ public class ParticleEffect
   private void	setColor(GL2 gl, Color color)
   {
     setColor(gl, color, 255);
+  }
+
+  public ArrayList<Particle>  getParticles()
+  {
+    return this.particles;
+  }
+
+  public void setParticles(ArrayList<Particle> particles)
+  {
+    this.particles = particles;
   }
 
 }

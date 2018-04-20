@@ -26,11 +26,11 @@ public final class Buttons
 
   private static final Point2D.Double[] centerPoints = new Point2D.Double[]
   {
-    new Point2D.Double (0,0),
+    new Point2D.Double (1.0,1.0),
     new Point2D.Double (0.5,0.5),
-    new Point2D.Double (-0.5,0.5),
-    new Point2D.Double (0.5,-0.5),
-    new Point2D.Double (-0.5,-0.5),
+    new Point2D.Double (1.5,1.5),
+    new Point2D.Double (0.5,1.5),
+    new Point2D.Double (1.5,0.5),
   };
 
   private static final boolean[] centerIsActive = new boolean[]
@@ -48,6 +48,7 @@ public final class Buttons
     new Color(0,255,0),
     new Color(0,0,255),
     new Color(255,255,255),
+    new Color(0,255,255),
   };
 
   private static final int[] sides = new int[]
@@ -56,6 +57,7 @@ public final class Buttons
     18,
     4,
     3,
+    6
   };
 
   public Buttons(GL2 gl)

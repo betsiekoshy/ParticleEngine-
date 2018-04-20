@@ -53,27 +53,26 @@ public final class MouseHandler extends MouseAdapter
 	{
 		initialClick = calcCoordinatesIndriver(e.getX(), e.getY());
 
-		ArrayList<Shape> shapes = driver.buttons.getShapes();
-
-		for(Shape shape: shapes){
-			if(shape.getShapeBounds().contains(initialClick)){
-				shape.setDrawingType(6);
-			}
-		}
-
-		driver.buttons.setShapes(shapes);
 	}
 
 	public void		mouseReleased(MouseEvent e)
 	{
-		//driver.particleEffect.generateParticles(50);
+		driver.particleEffect.generateParticles(20);
 
 		ArrayList<Shape> shapes = driver.buttons.getShapes();
+		ArrayList<Particle> particles = driver.particleEffect.getParticles();
+
 
 		for(Shape shape: shapes){
 				shape.setDrawingType(2);
 		}
 
+		for(Particle particle: particles)
+		{
+				particle.setIsMovingToShape(false);
+		}
+
+		driver.particleEffect.setParticles(particles);
 		driver.buttons.setShapes(shapes);
 	}
 
@@ -83,7 +82,55 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseDragged(MouseEvent e)
 	{
+		initialClick = calcCoordinatesIndriver(e.getX(), e.getY());
 
+
+		ArrayList<Particle> particles = driver.particleEffect.getParticles();
+
+
+		for(Shape shape: driver.buttons.getShapes()){
+			if(shape.getShapeBounds().contains(initialClick))
+			{
+				shape.setDrawingType(6);
+
+				for(Particle particle: driver.particleEffect.getParticles() )
+				{
+
+					if(particle.getColor() == shape.getColor() && particle.isAlive())
+					{
+						particle.setIsMovingToShape(true);
+
+						double deltaX = shape.getCenter().getX() - particle.getPosition().getX();
+						double deltaY = shape.getCenter().getY() - particle.getPosition().getY();
+
+						double angle = Math.atan2( deltaY, deltaX ) ;
+
+						double currentX = particle.getPosition().getX() * (0.05) * Math.cos( angle );
+						double currentY = particle.getPosition().getY() * (0.05) * Math.sin( angle );
+
+						particle.setNewPosition(new Point2D.Double(currentX, currentY));
+					}
+
+					if(shape.getShapeBounds().contains(particle.getPosition()))
+					{
+						particle.setPosition(shape.getCenter());
+						particle.setNewPosition(new Point2D.Double(0,0));
+						particle.setIsAlive(false);
+					}
+
+				}
+			}
+		}
+
+		ArrayList<Particle> aliveParticles = new ArrayList<Particle>();
+		for(Particle particle: driver.particleEffect.getParticles() )
+		{
+			if(particle.isAlive()){
+				aliveParticles.add(particle);
+			}
+		}
+
+		driver.particleEffect.setParticles(aliveParticles);
 	}
 
 	public void		mouseMoved(MouseEvent e)
@@ -108,8 +155,8 @@ public final class MouseHandler extends MouseAdapter
 		int				w = driver.getWidth();
 		int				h = driver.getHeight();
 		Point2D.Double	p = new Point2D.Double(0,0);
-		double			vx = p.x + (sx * 2.0) / w - 1.0;
-		double			vy = p.y - (sy * 2.0) / h + 1.0;
+		double			vx = p.x + (sx * 2.0) / w ;
+		double			vy = p.y - (sy * 2.0) / h * -1;
 
 		return new Point2D.Double(vx, vy);
 	}

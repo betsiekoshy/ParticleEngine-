@@ -21,6 +21,7 @@ public class Particle
 
   private boolean isAlive;               //Checks to see if the particle is still alive
   private boolean inside;
+  private boolean movingToShape;
 
   private Point2D.Double position;       // Position of the Particle
   private Point2D.Double newPosition;       // Position of the Particle
@@ -39,6 +40,7 @@ public class Particle
 
     this.isAlive = true;
     this.inside = false;
+    this.movingToShape = false;
 
     this.position = null;
     this.newPosition = null;
@@ -65,6 +67,11 @@ public class Particle
   public void setInside(boolean inside)
   {
     this.inside = inside;
+  }
+
+  public void setIsMovingToShape(boolean movingToShape)
+  {
+    this.movingToShape = movingToShape;
   }
 
   public void setBounds(Path2D.Double bounds)
@@ -97,6 +104,9 @@ public class Particle
     this.size = size;
   }
 
+  public void setIsAlive(boolean isAlive){
+    this.isAlive = isAlive;
+  }
 
   /*******************************************
           Getters for Particle Variables
@@ -126,8 +136,18 @@ public class Particle
     return this.points;
   }
 
-  public boolean isInside(){
+  public boolean isInside()
+  {
     return this.inside;
+  }
+
+  public boolean isMovingToShape()
+  {
+    return this.movingToShape;
+  }
+
+  public boolean isAlive(){
+    return this.isAlive;
   }
 
 

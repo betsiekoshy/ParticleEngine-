@@ -148,6 +148,9 @@ public final class Driver implements GLEventListener
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
 
+		gl.glMatrixMode(gl.GL_PROJECTION);
+		gl.glLoadIdentity();
+		gl.glOrtho(0.0f, 2f, 2f, 0.0f, 0.0f, 1.0f);
 		//draw the bounds of the screen
 		drawBounds(gl);
 
@@ -163,11 +166,11 @@ public final class Driver implements GLEventListener
 	{
 		bounds = new Path2D.Double();
 
-		bounds.moveTo(1.0, 1.0);
-		bounds.lineTo(-1.0, 1.0);
-		bounds.lineTo(-1.0, -1.0);
-		bounds.lineTo(1.0, -1.0);
-		bounds.lineTo(1.0, 1.0);
+		bounds.moveTo(0, 0);
+		bounds.lineTo(0, 2);
+		bounds.lineTo(2, 2);
+		bounds.lineTo(2, 0);
+		bounds.lineTo(0, 0);
 	}
 
 }
