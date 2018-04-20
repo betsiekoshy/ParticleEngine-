@@ -51,8 +51,6 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mousePressed(MouseEvent e)
 	{
-		initialClick = calcCoordinatesIndriver(e.getX(), e.getY());
-
 	}
 
 	public void		mouseReleased(MouseEvent e)
@@ -65,6 +63,7 @@ public final class MouseHandler extends MouseAdapter
 
 		for(Shape shape: shapes){
 				shape.setDrawingType(2);
+				shape.setTextColor(new Color(1f,1f,1f,1f));
 		}
 
 		for(Particle particle: particles)
@@ -84,53 +83,7 @@ public final class MouseHandler extends MouseAdapter
 	{
 		initialClick = calcCoordinatesIndriver(e.getX(), e.getY());
 
-
-		ArrayList<Particle> particles = driver.particleEffect.getParticles();
-
-
-		for(Shape shape: driver.buttons.getShapes()){
-			if(shape.getShapeBounds().contains(initialClick))
-			{
-				shape.setDrawingType(6);
-
-				for(Particle particle: driver.particleEffect.getParticles() )
-				{
-
-					if(particle.getColor() == shape.getColor() && particle.isAlive())
-					{
-						particle.setIsMovingToShape(true);
-
-						double deltaX = shape.getCenter().getX() - particle.getPosition().getX();
-						double deltaY = shape.getCenter().getY() - particle.getPosition().getY();
-
-						double angle = Math.atan2( deltaY, deltaX ) ;
-
-						double currentX = particle.getPosition().getX() * (0.05) * Math.cos( angle );
-						double currentY = particle.getPosition().getY() * (0.05) * Math.sin( angle );
-
-						particle.setNewPosition(new Point2D.Double(currentX, currentY));
-					}
-
-					if(shape.getShapeBounds().contains(particle.getPosition()))
-					{
-						particle.setPosition(shape.getCenter());
-						particle.setNewPosition(new Point2D.Double(0,0));
-						particle.setIsAlive(false);
-					}
-
-				}
-			}
-		}
-
-		ArrayList<Particle> aliveParticles = new ArrayList<Particle>();
-		for(Particle particle: driver.particleEffect.getParticles() )
-		{
-			if(particle.isAlive()){
-				aliveParticles.add(particle);
-			}
-		}
-
-		driver.particleEffect.setParticles(aliveParticles);
+		driver.particleEffect.moveTowardButton(initialClick);
 	}
 
 	public void		mouseMoved(MouseEvent e)

@@ -275,7 +275,7 @@ public class ParticleEffect
       for(Point2D.Double point: particle.getPoints())
       {
         //Check if any point collids with the button bounds
-        if(shape.getShapeBounds().contains(point))
+        if(shape.getShapeBounds().contains(point) && shape.isActive())
         {
           //Set new position if particles collid with buttons
           if (shape.getCenter().getX() + shape.getSize() >= point.getX())
@@ -300,6 +300,69 @@ public class ParticleEffect
       }
     }
 
+  }
+
+  public void moveTowardButton(Point2D.Double initialClick){
+
+
+    		ArrayList<Particle> particles = this.getParticles();
+
+
+    		for(Shape shape: buttons.getShapes()){
+    			if(shape.getShapeBounds().contains(initialClick) && shape.isActive())
+    			{
+    				shape.setDrawingType(6);
+    				shape.setTextColor(new Color(0f,0f,0f,1f));
+
+    				for(Particle particle: this.getParticles() )
+    				{
+
+    					if(particle.getColor() == shape.getColor() && particle.isAlive() && shape.getNumCount() != 0)
+    					{
+    						particle.setIsMovingToShape(true);
+
+    						double deltaX = shape.getCenter().getX() - particle.getPosition().getX();
+    						double deltaY = shape.getCenter().getY() - particle.getPosition().getY();
+
+    						double angle = Math.atan2( deltaY, deltaX ) ;
+
+    						double currentX = particle.getPosition().getX() * (0.05) * Math.cos( angle );
+    						double currentY = particle.getPosition().getY() * (0.05) * Math.sin( angle );
+
+    						particle.setNewPosition(new Point2D.Double(currentX, currentY));
+    					}
+
+    					if(shape.getShapeBounds().contains(particle.getPosition()))
+    					{
+    						particle.setPosition(shape.getCenter());
+    						particle.setNewPosition(new Point2D.Double(0,0));
+    						particle.setIsAlive(false);
+    						if(shape.getNumCount() != 0){
+    							shape.setNumCount(shape.getNumCount() - 1);
+    						}else{
+    							shape.setNumCount(0);
+    						}
+
+    					}
+
+    					if(shape.getNumCount() == 0){
+    						particle.setIsMovingToShape(false);
+    						shape.setIsActive(false);
+    					}
+
+    				}
+    			}
+    		}
+
+    		ArrayList<Particle> aliveParticles = new ArrayList<Particle>();
+    		for(Particle particle: this.getParticles() )
+    		{
+    			if(particle.isAlive()){
+    				aliveParticles.add(particle);
+    			}
+    		}
+
+    		this.setParticles(aliveParticles);
   }
 
   /**************************************************

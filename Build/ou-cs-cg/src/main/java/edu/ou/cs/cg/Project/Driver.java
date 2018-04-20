@@ -115,8 +115,7 @@ public final class Driver implements GLEventListener
 		w = drawable.getWidth();
 		h = drawable.getHeight();
 
-		renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 18),
-									true, true);
+		renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 18), true, true);
 	}
 
 	public void		dispose(GLAutoDrawable drawable)
@@ -147,6 +146,9 @@ public final class Driver implements GLEventListener
 		GL2		gl = drawable.getGL().getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
+		//gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+		gl.glShadeModel(GL2.GL_SMOOTH);
+		//gl.glEnable(GL.GL_TEXTURE_2D);
 
 		gl.glMatrixMode(gl.GL_PROJECTION);
 		gl.glLoadIdentity();
@@ -160,6 +162,8 @@ public final class Driver implements GLEventListener
 		//draw the particles
 		particleEffect = new ParticleEffect(gl, buttons, bounds);
 
+		displayNumberCounter();
+
 	}
 
 	private void	drawBounds(GL2 gl)
@@ -171,6 +175,29 @@ public final class Driver implements GLEventListener
 		bounds.lineTo(2, 2);
 		bounds.lineTo(2, 0);
 		bounds.lineTo(0, 0);
+	}
+
+	private void	displayNumberCounter()
+	{
+		for(Shape shape: buttons.getShapes())
+		{
+			if(shape.isActive())
+			{
+				//Intilalize String to store name
+				String name = shape.getNumCount() + "";
+				//Begin rendering the Text
+				renderer.beginRendering(this.getWidth(), this.getHeight());
+
+				//Set the color of the Text
+				renderer.setColor(shape.getTextColor());
+
+				//Draw/Dispaly the name
+				renderer.draw(name,  (int) shape.getTextPoint().getX(), (int) shape.getTextPoint().getY());
+
+				//Finish rendering
+				renderer.endRendering();
+			}
+		}
 	}
 
 }
