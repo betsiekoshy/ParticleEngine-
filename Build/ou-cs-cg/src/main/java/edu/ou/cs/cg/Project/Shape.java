@@ -45,7 +45,7 @@ public final class Shape
     this.mass = ((float)(4 / 3 * Math.PI * Math.pow(this.size, 3.0)));
     this.isActive = true;
     this.drawingType = 2;
-    this.numCount = (10 + (int)(Math.random() * ((40 - 10) + 1)));
+    this.numCount = (10 + (int)(Math.random() * ((50 - 10) + 1)));
     //this.numCount = (1 + (int)(Math.random() * ((9 - 1) + 1)));
     this.textColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
   }

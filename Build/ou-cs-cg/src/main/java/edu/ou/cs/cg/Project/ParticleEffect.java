@@ -109,7 +109,8 @@ public class ParticleEffect
 
   public void generateParticles()
   {
-    particles = new ArrayList<Particle>();
+    this.particles = new ArrayList<Particle>();
+
     for(Shape shape: buttons.getShapes())
     {
       if(shape.isActive())
@@ -187,34 +188,34 @@ public class ParticleEffect
     center = (rand.nextBoolean() ? (rand.nextBoolean() ? randomRight : randomBottom) : (rand.nextBoolean() ? randomLeft : randomTop));
 
     //if point spawns from the right side, moves the particle left
-    if((center.getX() <= 0 || center.getX() >= 2) && center == randomRight)
+    if(center == randomRight)
     {
         newRandomX = center.getX() * (.0055) * -1;
         newRandomY = center.getY() * (.0055) * (rand.nextBoolean() ? -1 : 1);
     }
 
     //if point spawns from the right bottom, moves the particle top
-    if((center.getY() <= 0 || center.getY() >= 2) && center == randomBottom)
+    if(center == randomBottom)
     {
         newRandomX = center.getX() * (.0055) * (rand.nextBoolean() ? -1 : 1);
         newRandomY = center.getY() * (.0055) * -1;
     }
 
     //if point spawns from the top side, moves the particle bottom
-    if((center.getY() <= 0 || center.getY() >= 2) && center == randomTop)
+    if(center == randomTop)
     {
         newRandomX = center.getX() * (.0055) * (rand.nextBoolean() ? -1 : 1) ;
         newRandomY = center.getY() * (.1) * -1;
     }
 
     //if point spawns from the left side, moves the particle right
-    if((center.getX() <= 0 || center.getX() >= 2) && center == randomLeft)
+    if(center == randomLeft)
     {
         newRandomX = center.getX() * (.1) * -1;
         newRandomY = center.getY() * (.0055) * (rand.nextBoolean() ? -1 : 1);
     }
 
-    // Gives the Particle a Random Position 
+    // Gives the Particle a Random Position
     particle.setPosition(center);
 
     //Gives the Particle a new Random Position
@@ -260,7 +261,6 @@ public class ParticleEffect
    *****************************************************/
   public void update(Particle particle)
   {
-
     checkBoundries(particle);
     particle.setPosition(add(particle.getPosition(), particle.getNewPosition()));
   }
@@ -307,6 +307,7 @@ public class ParticleEffect
 
         for(Shape shape: shapes)
         {
+
           //Get all all points that create the bounds of the particle
           for(Point2D.Double point: particle.getPoints())
           {
@@ -369,7 +370,7 @@ public class ParticleEffect
     					}
 
 
-    					if(shape.getShapeBounds().contains(particle.getPosition()))
+    					if(shape.getShapeBounds().contains(particle.getPosition()) && particle.getColor() == shape.getColor())
     					{
     						particle.setPosition(shape.getCenter());
     						particle.setIsAlive(false);
@@ -425,12 +426,12 @@ public class ParticleEffect
 
     }
 
-    if(!inside){
-        this.generateParticles();
-    }
-
     this.setParticles(particles);
     buttons.setShapes(shapes);
+
+    if(!inside){
+        generateParticles();
+    }
 
 
   }
@@ -456,6 +457,10 @@ public class ParticleEffect
   public void setParticles(ArrayList<Particle> particles)
   {
     this.particles = particles;
+  }
+
+  public void setInitial(boolean initial){
+    this.initial = initial;
   }
 
 }
