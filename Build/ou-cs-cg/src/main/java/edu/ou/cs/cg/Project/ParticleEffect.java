@@ -163,39 +163,61 @@ public class ParticleEffect
     particle.setMass(((float)(4 / 3 * Math.PI * Math.pow(particle.getSize(), 3.0))));
 
     //Calculates the starting center for the particle
-    //Random point on the top and bottom of the screen
+    //Random point on the bottom of the screen
     double randomX = (5 + (int)(Math.random() * ((195 - 5) + 1))) / 100.0 ;
-    double randomY =  (200 + (int)(Math.random() * ((205 - 200) + 1))) / 100.0 ;
-    Point2D.Double randomYaxis = new Point2D.Double(randomX, randomY);
+    double randomY =  (200 + (int)(Math.random() * ((215 - 200) + 1))) / 100.0 ;
+    Point2D.Double randomBottom = new Point2D.Double(randomX, randomY);
 
-    //Random point on the left and right of the screen
-    double randomX1 = (200 + (int)(Math.random() * ((205 - 200) + 1))) / 100.0 ;
-    double randomY1 =  (5 + (int)(Math.random() * ((195 - 5) + 1)))  / 100.0 ;
-    Point2D.Double randomXaxis = new Point2D.Double(randomX1, randomY1);
+    //Random point on the right of the screen
+    randomX = (200 + (int)(Math.random() * ((215 - 200) + 1))) / 100.0 ;
+    randomY =  (5 + (int)(Math.random() * ((195 - 5) + 1)))  / 100.0 ;
+    Point2D.Double randomRight = new Point2D.Double(randomX, randomY);
 
-    //Randomly initalize new center
-    center = (rand.nextBoolean() ? randomXaxis : randomYaxis);
+    //Random point on the top of the screen
+    randomX = (5 + (int)(Math.random() * ((195 - 5) + 1))) / 100.0 ;
+    randomY =  (1 + (int)(Math.random() * ((10 - 1) + 1))) / -100.0 ;
+    Point2D.Double randomTop = new Point2D.Double(randomX, randomY);
 
-    //if point spawns from the left side, moves the particle right
+    //Random point on the left of the screen
+    randomX =  (1 + (int)(Math.random() * ((10 - 1) + 1))) / -100.0 ;
+    randomY =  (5 + (int)(Math.random() * ((195 - 5) + 1))) / 100.0 ;
+    Point2D.Double randomLeft = new Point2D.Double(randomX, randomY);
+
+    //Randomly initalize new center from either top, bottom, left or right
+    center = (rand.nextBoolean() ? (rand.nextBoolean() ? randomRight : randomBottom) : (rand.nextBoolean() ? randomLeft : randomTop));
+
     //if point spawns from the right side, moves the particle left
-    if(center.getX() <= 0 || center.getX() >= 2)
+    if((center.getX() <= 0 || center.getX() >= 2) && center == randomRight)
     {
         newRandomX = center.getX() * (.0055) * -1;
         newRandomY = center.getY() * (.0055) * (rand.nextBoolean() ? -1 : 1);
     }
 
-    //if point spawns from the top side, moves the particle bottom
     //if point spawns from the right bottom, moves the particle top
-    if(center.getY() <= 0 || center.getY() >= 2)
+    if((center.getY() <= 0 || center.getY() >= 2) && center == randomBottom)
     {
         newRandomX = center.getX() * (.0055) * (rand.nextBoolean() ? -1 : 1);
         newRandomY = center.getY() * (.0055) * -1;
     }
 
-    // Gives the Particle a Random Position between -1 to 1
+    //if point spawns from the top side, moves the particle bottom
+    if((center.getY() <= 0 || center.getY() >= 2) && center == randomTop)
+    {
+        newRandomX = center.getX() * (.0055) * (rand.nextBoolean() ? -1 : 1) ;
+        newRandomY = center.getY() * (.1) * -1;
+    }
+
+    //if point spawns from the left side, moves the particle right
+    if((center.getX() <= 0 || center.getX() >= 2) && center == randomLeft)
+    {
+        newRandomX = center.getX() * (.1) * -1;
+        newRandomY = center.getY() * (.0055) * (rand.nextBoolean() ? -1 : 1);
+    }
+
+    // Gives the Particle a Random Position 
     particle.setPosition(center);
 
-    //Gives the Particle a new Random Position between -1 to 1
+    //Gives the Particle a new Random Position
     particle.setNewPosition(new Point2D.Double(newRandomX, newRandomY));
   }
 
@@ -240,7 +262,6 @@ public class ParticleEffect
   {
 
     checkBoundries(particle);
-
     particle.setPosition(add(particle.getPosition(), particle.getNewPosition()));
   }
 

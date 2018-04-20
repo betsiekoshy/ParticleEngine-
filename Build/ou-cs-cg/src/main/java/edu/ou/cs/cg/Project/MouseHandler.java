@@ -56,16 +56,7 @@ public final class MouseHandler extends MouseAdapter
 	public void		mouseReleased(MouseEvent e)
 	{
 		driver.particleEffect.updateOnRelease();
-		boolean inside = false;
-		for(Particle particle: driver.particleEffect.getParticles()){
-			if(driver.bounds.contains(particle.getPosition())){
-				inside = true;
-			}
-		}
-
-		if(!inside){
-				driver.particleEffect.generateParticles();
-		}
+		
 
 	}
 
