@@ -44,7 +44,9 @@ public final class Driver implements GLEventListener
 	private int				w;			// Canvas width
 	private int				h;			// Canvas height
 	private int				gameOverCounter = 0;
+	private static int				gameCounter = 0;
 	private int 			complimentCounter = 0;
+	private int 			numGamesPlayed = 0;
 	private TextRenderer	renderer;
 
 
@@ -168,7 +170,7 @@ public final class Driver implements GLEventListener
 		drawBounds(gl);
 
 		//create the buttons
-		buttons = new Buttons(gl);
+		buttons = new Buttons(gl, numGamesPlayed);
 
 		//draw the particles
 		particleEffect = new ParticleEffect(gl, buttons, bounds);
@@ -193,10 +195,14 @@ public final class Driver implements GLEventListener
 	private void	displayAchievement()
 	{
 		Random rand = new Random();
+		String name = "";
 		boolean gameOver = true;
+		boolean stillActiveShapes = false;
+		renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 50), true, true);
+
 		for(Shape shape: buttons.getShapes())
 		{
-			if(shape.isActive())
+			if(shape.isActive() && !shape.isMixColor() && !shape.isTwoTone())
 			{
 				gameOver = false;
 			}
@@ -204,43 +210,62 @@ public final class Driver implements GLEventListener
 
 		if(gameOver)
 		{
+			for(Shape shape: buttons.getShapes())
+			{
+				if(shape.isMixColor() || shape.isTwoTone())
+				{
+					stillActiveShapes = true;
+				}
+			}
+		}
+
+		if(gameOver && !stillActiveShapes)
+		{
 			gameOverCounter++;
 
-			renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 50), true, true);
-
 			//Intilalize String to store name
-			String name = compliments[complimentCounter];
-			//Begin rendering the Text
-			renderer.beginRendering(this.getWidth(), this.getHeight());
-
-			//Set the color of the Text
-			renderer.setColor(1f,1f,1f,1f);
-
-			//Draw/Dispaly the name
-			renderer.draw(name, 270, 368);
-
-			//Finish rendering
-			renderer.endRendering();
-
-			if(gameOverCounter == 100)
-			{
-				if(complimentCounter == compliments.length - 1)
-				{
-					complimentCounter = 0;
-				}
-				else
-				{
-					complimentCounter++;
-				}
-
-				buttons.setInitial(true);
-				particleEffect.setInitial(true);
-				gameOverCounter = 0;
-			}
-
-
+			name = compliments[complimentCounter];
 
 		}
+
+		if(gameOver && stillActiveShapes)
+		{
+			gameOverCounter++;
+
+			//Intilalize String to store name
+			name = "GameOver";
+			numGamesPlayed = 0;
+		}
+
+		if(gameOverCounter == 200)
+		{
+			if(complimentCounter == compliments.length - 1)
+			{
+				complimentCounter = 0;
+			}
+			else
+			{
+				complimentCounter++;
+			}
+
+			buttons.setInitial(true);
+			particleEffect.setInitial(true);
+			gameOverCounter = 0;
+			numGamesPlayed++;
+		}
+
+		//Begin rendering the Text
+		renderer.beginRendering(this.getWidth(), this.getHeight());
+
+		//Set the color of the Text
+		renderer.setColor(1f,1f,1f,1f);
+
+		//Draw/Dispaly the name
+		renderer.draw(name, 270, 368);
+
+		//Finish rendering
+		renderer.endRendering();
+
 	}
 
 	private void	displayNumberCounter()

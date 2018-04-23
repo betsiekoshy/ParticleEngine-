@@ -67,25 +67,27 @@ public class ParticleEffect
       // Initialize and add randomized variables for all particles
       for(Shape shape: buttons.getShapes())
       {
-        for(int i = 0; i < shape.getNumCount(); i++)
-        {
-          // Create a single particle
-          Particle particle = new Particle();
+        if(!shape.isMixColor() && !shape.isTwoTone()){
+          for(int i = 0; i < shape.getNumCount(); i++)
+          {
+            // Create a single particle
+            Particle particle = new Particle();
 
-          //store the bounds of the scrren
-          particle.setBounds(bounds);
+            //store the bounds of the scrren
+            particle.setBounds(bounds);
 
-          // Gives the particle random initial variables
-          RandomizeParticle(particle);
+            // Gives the particle random initial variables
+            RandomizeParticle(particle);
 
-          particle.setColor(shape.getColor());
+            particle.setColor(shape.getColorOne());
 
-          // Add particles to the ArrayList of particles
-          particles.add(particle);
+            // Add particles to the ArrayList of particles
+            particles.add(particle);
 
-          // Draw the particle
-          drawParticle(particle);
+            // Draw the particle
+            drawParticle(particle);
 
+          }
         }
       }
       initial = false;
@@ -113,7 +115,7 @@ public class ParticleEffect
 
     for(Shape shape: buttons.getShapes())
     {
-      if(shape.isActive())
+      if(shape.isActive() && !shape.isMixColor() && !shape.isTwoTone())
       {
         for(int i = 0; i < shape.getNumCount(); i++)
         {
@@ -126,7 +128,7 @@ public class ParticleEffect
           // Gives the particle random initial variables
           RandomizeParticle(particle);
 
-          particle.setColor(shape.getColor());
+          particle.setColor(shape.getColorOne());
 
           // Add particles to the ArrayList of particles
           particles.add(particle);
@@ -346,6 +348,7 @@ public class ParticleEffect
 
 
     		for(Shape shape: buttons.getShapes()){
+
     			if(shape.getShapeBounds().contains(initialClick) && shape.isActive())
     			{
     				shape.setDrawingType(6);
@@ -354,7 +357,7 @@ public class ParticleEffect
     				for(Particle particle: this.getParticles() )
     				{
 
-    					if(particle.getColor() == shape.getColor() && particle.isAlive() && shape.getNumCount() != 0)
+    					if((((particle.getColor() == shape.getColorOne() && (shape.getOneColorCount() != 0 || !shape.isTwoTone())) || (particle.getColor() == shape.getColorTwo()) && shape.getTwoColorCount() !=0)) && particle.isAlive() && shape.getNumCount() != 0)
     					{
     						particle.setIsMovingToShape(true);
 
@@ -370,24 +373,57 @@ public class ParticleEffect
     					}
 
 
-    					if(shape.getShapeBounds().contains(particle.getPosition()) && particle.getColor() == shape.getColor())
+    					if(shape.getShapeBounds().contains(particle.getPosition()) && (particle.getColor() == shape.getColorOne() || particle.getColor() == shape.getColorTwo()) )
     					{
-    						particle.setPosition(shape.getCenter());
-    						particle.setIsAlive(false);
-
     						if(shape.getNumCount() != 0)
                 {
-    							shape.setNumCount(shape.getNumCount() - 1);
-    						}else{
+                  if(shape.isTwoTone())
+                  {
+                    if(particle.getColor() == shape.getColorOne() && shape.getOneColorCount() != 0)
+                    {
+
+                      shape.setOneColorCount(shape.getOneColorCount() - 1);
+                      particle.setPosition(shape.getCenter());
+                      particle.setIsAlive(false);
+                    }
+
+                    if(particle.getColor() == shape.getColorTwo() && shape.getTwoColorCount() != 0)
+                    {
+                      shape.setTwoColorCount(shape.getTwoColorCount() - 1);
+                      particle.setPosition(shape.getCenter());
+                      particle.setIsAlive(false);
+                    }
+
+                    shape.setNumCount(shape.getOneColorCount()  + shape.getTwoColorCount());
+
+
+                  }
+                  else
+                  {
+                    shape.setNumCount(shape.getNumCount() - 1);
+                    particle.setPosition(shape.getCenter());
+                    particle.setIsAlive(false);
+                  }
+
+    						}
+                else
+                {
     							shape.setNumCount(0);
     						}
 
     					}
 
-    					if(shape.getNumCount() == 0){
+    					if(shape.getNumCount() == 0)
+              {
     						particle.setIsMovingToShape(false);
     						shape.setIsActive(false);
     					}
+
+              if(shape.getNumCount() == 0 && shape.isTwoTone())
+              {
+                //TODO: explode new color of partilcles
+
+              }
 
     				}
     			}

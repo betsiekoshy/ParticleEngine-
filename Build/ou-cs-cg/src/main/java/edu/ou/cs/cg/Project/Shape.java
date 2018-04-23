@@ -18,11 +18,15 @@ public final class Shape
 {
   private int sides;
   private int numCount;
+  private int drawingType;
+  private int oneColorCount;
+  private int twoColorCount;
 
-  private double size;
+  private double size = 0.14;;
   private double mass;
 
-  private Color color;
+  private Color colorOne;
+  private Color colorTwo;
   private Color textColor;
 
   private Point2D.Double centerPoint;
@@ -30,23 +34,26 @@ public final class Shape
   private Path2D.Double shapeBounds;
 
   private boolean isActive;
+  private boolean twoTone;
+  private boolean isMixColor;
 
-  private int drawingType;
 
-
-  public Shape(int sides, Color color, Point2D.Double centerPoint, Point2D.Double textPoint)
+  public Shape(int sides, Color colorOne, Color colorTwo, Point2D.Double centerPoint, Point2D.Double textPoint)
   {
     Random rand = new Random();
-    this.size = 0.14;
     this.sides = sides;
-    this.color = color;
+    this.colorOne = colorOne;
+    this.colorTwo = colorTwo;
     this.centerPoint = centerPoint;
     this.textPoint = textPoint;
     this.mass = ((float)(4 / 3 * Math.PI * Math.pow(this.size, 3.0)));
     this.isActive = true;
+    this.twoTone = false;
+    this.isMixColor = false;
     this.drawingType = 2;
-    this.numCount = (10 + (int)(Math.random() * ((50 - 10) + 1)));
-    //this.numCount = (1 + (int)(Math.random() * ((9 - 1) + 1)));
+    this.oneColorCount = 0;
+    this.twoColorCount = 0;
+    this.numCount = (10 + (int)(Math.random() * ((60- 10) + 1)));
     this.textColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
   }
 
@@ -63,8 +70,25 @@ public final class Shape
     this.numCount = numCount;
   }
 
+  public void setOneColorCount(int oneColorCount){
+    this.oneColorCount = oneColorCount;
+  }
+
+  public void setTwoColorCount(int twoColorCount){
+    this.twoColorCount = twoColorCount;
+  }
+
   public void setIsActive(boolean isActive){
     this.isActive = isActive;
+  }
+
+  public void setTwoTone(boolean twoTone)
+  {
+    this.twoTone = twoTone;
+  }
+
+  public void setIsMixedColor(boolean isMixColor){
+    this.isMixColor = isMixColor;
   }
 
 
@@ -96,14 +120,29 @@ public final class Shape
     return this.drawingType;
   }
 
+  public int getOneColorCount()
+  {
+    return this.oneColorCount;
+  }
+
+  public int getTwoColorCount()
+  {
+    return this.twoColorCount;
+  }
+
   public double getMass()
   {
     return this.mass;
   }
 
-  public Color getColor()
+  public Color getColorOne()
   {
-    return color;
+    return colorOne;
+  }
+
+  public Color getColorTwo()
+  {
+    return colorTwo;
   }
 
   public Color getTextColor()
@@ -124,6 +163,16 @@ public final class Shape
   public boolean isActive()
   {
     return isActive;
+  }
+
+  public boolean isTwoTone()
+  {
+    return twoTone;
+  }
+
+  public boolean isMixColor()
+  {
+    return isMixColor;
   }
 
   public Path2D.Double getShapeBounds()

@@ -5,6 +5,7 @@ import java.awt.event.*;
 import java.awt.geom.*;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Collections;
 import javax.swing.*;
 import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
@@ -17,6 +18,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 public final class Buttons
 {
   private static int numButtons = 5;
+  private static int numGamesPlayed;
   private double mass;
 
   private static ArrayList<Shape>  shapes = new ArrayList<Shape>();
@@ -43,37 +45,33 @@ public final class Buttons
 
   };
 
-  private static final boolean[] centerIsActive = new boolean[]
-  {
-    true,
-    true,
-    true,
-    true,
-    true,
-  };
-
   private static final Color[] colors = new Color[]
   {
     new Color(255,0,0),
     new Color(0,255,0),
     new Color(0,0,255),
-    // new Color(255,255,255),
-    // new Color(0,255,255),
+    new Color(255,255,0),
+    new Color(0,255,255),
+    new Color(255,0,255),
   };
 
   private static final int[] sides = new int[]
   {
-    8,
+    3,
+    12,
     18,
     4,
-    // 3,
-    // 6
+    6,
+    8,
   };
 
-  public Buttons(GL2 gl)
+  public Buttons(GL2 gl, int numGamesPlayed)
   {
+    this.numGamesPlayed = numGamesPlayed;
+
     if(initial)
     {
+        shapes = new ArrayList<Shape>();
         generateShapes();
         initial = false;
     }
@@ -84,32 +82,108 @@ public final class Buttons
   {
     Random rand = new Random();
 
-    for(int i = 0; i < numButtons; i++){
-      int k = rand.nextInt(colors.length);
+    if(numGamesPlayed < 3)
+    {
+      for(int i = 0; i < numButtons; i++)
+      {
+        int k = rand.nextInt(colors.length/2);
 
-      if(!colorUsed.contains(colors[k])){
-        colorUsed.add(colors[k]);
+        if(!colorUsed.contains(colors[k])){
+          colorUsed.add(colors[k]);
+        }
+
+        Shape shape = new Shape(sides[k], colors[k], null, centerPoints[i], textPoint[i]);
+        shapes.add(shape);
+      }
+    }
+    else
+    {
+      Shape shape = null;
+
+      Color colorOne = null;
+      Color colorTwo = null;
+
+      int colorOneSides = 0;
+      int colorTwoSides = 0;
+
+      int numCount = 0;
+
+      int mixColor = (colors.length/2 + (int)(Math.random() * (((colors.length - 1) - colors.length/2) + 1)));
+
+      switch(mixColor){
+        case 3:
+          colorOne = colors[0];
+          colorTwo = colors[1];
+
+          colorOneSides = 0;
+          colorTwoSides = 1;
+          break;
+        case 4:
+          colorOne = colors[1];
+          colorTwo = colors[2];
+
+          colorOneSides = 1;
+          colorTwoSides = 2;
+          break;
+        case 5:
+          colorOne = colors[0];
+          colorTwo = colors[2];
+
+          colorOneSides = 0;
+          colorTwoSides = 2;
+          break;
       }
 
-      Shape shape = new Shape(sides[k], colors[k], centerPoints[i], textPoint[i]);
-      shapes.add(shape);
+      colorUsed.add(colorOne);
+      colorUsed.add(colorTwo);
+
+      for(int i = 0; i < numButtons; i++)
+      {
+        switch(i){
+          case 0:
+            shape = new Shape(sides[colorOneSides], colorOne, null, centerPoints[i], textPoint[i]);
+            break;
+          case 1:
+            shape = new Shape(sides[colorTwoSides], colorTwo, null, centerPoints[i], textPoint[i]);
+            break;
+          case 2:
+            shape = new Shape(sides[mixColor], colors[mixColor], null, centerPoints[i], textPoint[i]);
+            shape.setIsMixedColor(true);
+            numCount = shape.getNumCount();
+            break;
+          case 3:
+            shape = new Shape(sides[mixColor], colorOne, colorTwo, centerPoints[i], textPoint[i]);
+            shape.setNumCount(numCount);
+            shape.setTwoTone(true);
+            shape.setOneColorCount(numCount/2);
+            shape.setTwoColorCount(shape.getNumCount() - shape.getOneColorCount());
+            break;
+          case 4:
+            int randShape = (rand.nextBoolean() ? colorOneSides : colorTwoSides) ;
+            shape = new Shape(sides[randShape], colors[randShape], null, centerPoints[i], textPoint[i]);
+            break;
+        }
+
+        shapes.add(shape);
+      }
     }
   }
 
   private void drawButtons(GL2 gl)
   {
     colorUsed = new ArrayList<Color>();
+    //Collections.shuffle(this.shapes);
 
     for(Shape shape: this.shapes)
     {
       if(shape.isActive())
       {
 
-        if(!colorUsed.contains(shape.getColor())){
-          colorUsed.add(shape.getColor());
+        if(!colorUsed.contains(shape.getColorOne()) && !shape.isMixColor()){
+          colorUsed.add(shape.getColorOne());
         }
         //set the color of the button
-        setColor(gl, shape.getColor());
+        setColor(gl, shape.getColorOne());
         //Initalize array to create path2d.double
         ArrayList<Point2D.Double> shapePoints = new ArrayList<Point2D.Double>();
 
@@ -120,6 +194,10 @@ public final class Buttons
         // Loops around in a circle depending on the sides set
         for(int i = 0; i <= shape.getSides(); i++)
         {
+          if(shape.isTwoTone() && i == (int) shape.getSides()/2)
+          {
+              setColor(gl, shape.getColorTwo());
+          }
           // Figure out the angle of the particle
           Double angle = 2 * Math.PI * i / shape.getSides();
 
