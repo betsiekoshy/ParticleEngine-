@@ -65,6 +65,16 @@ public final class Buttons
     8,
   };
 
+  public int getNumButtons() 
+  {
+    return this.numButtons;
+  }
+
+  public void setNumButtons(int b) 
+  {
+    this.numButtons = b;
+  }
+
   public Buttons(GL2 gl, int numGamesPlayed)
   {
     this.numGamesPlayed = numGamesPlayed;
@@ -258,7 +268,7 @@ public final class Buttons
 
   public void setShapes(ArrayList<Shape> shapes)
   {
-    this.shapes = shapes;;
+    this.shapes = shapes;
   }
 
 

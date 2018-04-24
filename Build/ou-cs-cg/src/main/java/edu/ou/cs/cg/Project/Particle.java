@@ -24,7 +24,7 @@ public class Particle
   private boolean movingToShape;
 
   private Point2D.Double position;       // Position of the Particle
-  private Point2D.Double newPosition;       // Position of the Particle
+  private Point2D.Double newPosition;    // Position of the Particle
   private Point2D.Double speed;
 
   private ArrayList<Point2D.Double> points;

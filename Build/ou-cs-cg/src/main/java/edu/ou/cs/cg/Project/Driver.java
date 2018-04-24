@@ -57,6 +57,9 @@ public final class Driver implements GLEventListener
 		"Fantastic!",
 		"Awesome!",
 		"Marvelous!",
+		//"Wowzers!",
+		//"Mind-Boggling!",
+		//"Astounding"
 	};
 
 
@@ -173,7 +176,7 @@ public final class Driver implements GLEventListener
 		buttons = new Buttons(gl, numGamesPlayed);
 
 		//draw the particles
-		particleEffect = new ParticleEffect(gl, buttons, bounds);
+		particleEffect = new ParticleEffect(gl, buttons, bounds, this.getComponent());
 
 		displayNumberCounter();
 

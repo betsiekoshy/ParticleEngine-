@@ -41,17 +41,19 @@ public class ParticleEffect
 
   private Buttons buttons;
   private GL2 gl;
+  private Component component;
 
   private Path2D.Double bounds;
 
   private static boolean initial = true;
 
 
-  public ParticleEffect(GL2 gl, Buttons buttons, Path2D.Double bounds)
+  public ParticleEffect(GL2 gl, Buttons buttons, Path2D.Double bounds, Component c)
   {
     //initalize variables
     this.gl = gl;
     this.buttons = buttons;
+    this.component = c;
     this.bounds = bounds;
     NUMBER_OF_PARTICLES_OVERALL = 0;
 
@@ -231,9 +233,31 @@ public class ParticleEffect
    **************************************************/
   private void drawParticle(Particle particle)
   {
-    // Set the color of the particle
-    setColor(gl, particle.getColor());
+      // Set the color of the particle
+      setColor(gl, particle.getColor());
 
+      float x0 = (float)particle.getPosition().getX();
+      float y0 = (float)particle.getPosition().getY();
+/*
+      Graphics2D g = (Graphics2D)this.component.getGraphics();
+      g.setStroke(new BasicStroke(4));
+    
+      //Define the ball
+      Ellipse2D ball = new Ellipse2D.Double(x0, y0, particle.getSize(), particle.getSize());
+      
+      float x1 = x0 + (float)(particle.getSize());
+      float y1 = y0 + (float)(particle.getSize());
+			//Create paint to give the illusion of light
+      float[] f = {(float)particle.getSize()/4, (float)particle.getSize()/2};
+      Color[] c = {Color.WHITE, particle.getColor()};
+			RadialGradientPaint	b =
+					new RadialGradientPaint(particle.getPosition(), (float)particle.getSize()/2, f, c);
+			
+			//Paint the ball
+			g.setPaint(b);
+			g.fill(ball);
+      g.draw(ball);
+*/
     ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
     // Begin drawing the circ;e
     gl.glBegin(GL.GL_TRIANGLE_FAN);
@@ -244,9 +268,16 @@ public class ParticleEffect
       // Figure out the angle of the particle
       angle = 2 * Math.PI * i / this.sides;
 
+      if(i > this.sides/3){
+        setColor(gl, new Color(255, 255, 255, 125));
+      }
+      else {
+        setColor(gl, particle.getColor());
+      }
+
       // Calculates the final x and y position of the particle
-      x = particle.getPosition().getX() + particle.getSize() * Math.cos(angle);
-      y = particle.getPosition().getY() + particle.getSize() * Math.sin(angle);
+      this.x = x0 + particle.getSize() * Math.cos(angle);
+      this.y = y0 + particle.getSize() * Math.sin(angle);
 
       // Draws the section
       gl.glVertex2d(x,y);
@@ -256,6 +287,7 @@ public class ParticleEffect
     // Completed in drawing the particle
     gl.glEnd();
     particle.setPoints(points);
+  
   }
 
   /*****************************************************
