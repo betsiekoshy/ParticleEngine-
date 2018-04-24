@@ -47,7 +47,6 @@ public class ParticleEffect
 
   private static boolean initial = true;
 
-
   public ParticleEffect(GL2 gl, Buttons buttons, Path2D.Double bounds, Component c)
   {
     //initalize variables
@@ -241,10 +240,10 @@ public class ParticleEffect
 /*
       Graphics2D g = (Graphics2D)this.component.getGraphics();
       g.setStroke(new BasicStroke(4));
-    
+
       //Define the ball
       Ellipse2D ball = new Ellipse2D.Double(x0, y0, particle.getSize(), particle.getSize());
-      
+
       float x1 = x0 + (float)(particle.getSize());
       float y1 = y0 + (float)(particle.getSize());
 			//Create paint to give the illusion of light
@@ -252,7 +251,7 @@ public class ParticleEffect
       Color[] c = {Color.WHITE, particle.getColor()};
 			RadialGradientPaint	b =
 					new RadialGradientPaint(particle.getPosition(), (float)particle.getSize()/2, f, c);
-			
+
 			//Paint the ball
 			g.setPaint(b);
 			g.fill(ball);
@@ -268,12 +267,12 @@ public class ParticleEffect
       // Figure out the angle of the particle
       angle = 2 * Math.PI * i / this.sides;
 
-      if(i > this.sides/3){
-        setColor(gl, new Color(255, 255, 255, 125));
-      }
-      else {
+      // if(i > this.sides/3){
+      //   setColor(gl, new Color(0, 0, 0, 125));
+      // }
+      // else {
         setColor(gl, particle.getColor());
-      }
+    //  }
 
       // Calculates the final x and y position of the particle
       this.x = x0 + particle.getSize() * Math.cos(angle);
@@ -287,7 +286,7 @@ public class ParticleEffect
     // Completed in drawing the particle
     gl.glEnd();
     particle.setPoints(points);
-  
+
   }
 
   /*****************************************************
@@ -358,7 +357,7 @@ public class ParticleEffect
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() , particle.getNewPosition().getY()));
               }
 
-              if (shape.getCenter().getY() + shape.getSize()>= point.getY())
+              if (shape.getCenter().getY() + shape.getSize() >= point.getY())
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
               }
@@ -366,21 +365,19 @@ public class ParticleEffect
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY()));
               }
-              break;
+              //break;
             }
           }
         }
     }
   }
 
-  public void moveTowardButton(Point2D.Double initialClick){
-
-
+  public void moveTowardButton(Point2D.Double initialClick)
+  {
     		ArrayList<Particle> particles = this.getParticles();
 
-
-    		for(Shape shape: buttons.getShapes()){
-
+    		for(Shape shape: buttons.getShapes())
+        {
     			if(shape.getShapeBounds().contains(initialClick) && shape.isActive())
     			{
     				shape.setDrawingType(6);
@@ -388,7 +385,6 @@ public class ParticleEffect
 
     				for(Particle particle: this.getParticles() )
     				{
-
     					if((((particle.getColor() == shape.getColorOne() && (shape.getOneColorCount() != 0 || !shape.isTwoTone())) || (particle.getColor() == shape.getColorTwo()) && shape.getTwoColorCount() !=0)) && particle.isAlive() && shape.getNumCount() != 0)
     					{
     						particle.setIsMovingToShape(true);
@@ -398,12 +394,11 @@ public class ParticleEffect
 
     						double angle = Math.atan2( deltaY, deltaX ) ;
 
-    						double currentX = particle.getPosition().getX() * (0.05) * Math.cos( angle );
-    						double currentY = particle.getPosition().getY() * (0.05) * Math.sin( angle );
+    						double currentX = particle.getPosition().getX() * (0.075) * Math.cos( angle );
+    						double currentY = particle.getPosition().getY() * (0.075) * Math.sin( angle );
 
     						particle.setNewPosition(new Point2D.Double(currentX, currentY));
     					}
-
 
     					if(shape.getShapeBounds().contains(particle.getPosition()) && (particle.getColor() == shape.getColorOne() || particle.getColor() == shape.getColorTwo()) )
     					{
@@ -413,7 +408,6 @@ public class ParticleEffect
                   {
                     if(particle.getColor() == shape.getColorOne() && shape.getOneColorCount() != 0)
                     {
-
                       shape.setOneColorCount(shape.getOneColorCount() - 1);
                       particle.setPosition(shape.getCenter());
                       particle.setIsAlive(false);
@@ -427,8 +421,6 @@ public class ParticleEffect
                     }
 
                     shape.setNumCount(shape.getOneColorCount()  + shape.getTwoColorCount());
-
-
                   }
                   else
                   {
@@ -436,20 +428,18 @@ public class ParticleEffect
                     particle.setPosition(shape.getCenter());
                     particle.setIsAlive(false);
                   }
-
     						}
                 else
                 {
     							shape.setNumCount(0);
     						}
-
     					}
 
-    					if(shape.getNumCount() == 0)
+              if(shape.getNumCount() == 0)
               {
-    						particle.setIsMovingToShape(false);
-    						shape.setIsActive(false);
-    					}
+                particle.setIsMovingToShape(false);
+                shape.setIsActive(false);
+              }
 
               if(shape.getNumCount() == 0 && shape.isTwoTone())
               {
@@ -475,29 +465,44 @@ public class ParticleEffect
   public void updateOnRelease()
   {
     boolean inside = false;
+    Random rand = new Random();
     ArrayList<Shape> shapes = buttons.getShapes();
     ArrayList<Particle> particles = this.getParticles();
 
-
-    for(Shape shape: shapes){
+    for(Shape shape: shapes)
+    {
         shape.setDrawingType(2);
         shape.setTextColor(new Color(1f,1f,1f,1f));
+
+        for(Particle particle: particles)
+        {
+          if(shape.getShapeBounds().contains(particle.getPosition()))
+          {
+            particle.setIsAlive(false);
+          }
+        }
     }
 
     for(Particle particle: particles)
     {
-      particle.setIsMovingToShape(false);
+      if(particle.isMovingToShape()){
+        particle.setNewPosition(new Point2D.Double(particle.getPosition().getX() * (0.0055) * (rand.nextBoolean() ? -1 : 1),
+                                                   particle.getPosition().getY() * (0.0055) * (rand.nextBoolean() ? -1 : 1)));
+      }
+
       if(bounds.contains(particle.getPosition()))
       {
         inside = true;
       }
 
+      particle.setIsMovingToShape(false);
     }
 
     this.setParticles(particles);
     buttons.setShapes(shapes);
 
-    if(!inside){
+    if(!inside)
+    {
         generateParticles();
     }
 

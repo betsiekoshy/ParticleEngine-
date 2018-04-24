@@ -53,7 +53,7 @@ public final class Shape
     this.drawingType = 2;
     this.oneColorCount = 0;
     this.twoColorCount = 0;
-    this.numCount = (10 + (int)(Math.random() * ((60- 10) + 1)));
+    this.numCount = (10 + (int)(Math.random() * ((30- 10) + 1)));
     this.textColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
   }
 
