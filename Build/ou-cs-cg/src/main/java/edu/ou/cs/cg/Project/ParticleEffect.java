@@ -32,7 +32,7 @@ public class ParticleEffect
 
   private static int i;                     // Keeps track of how many particles are in the application so far
   private final int sides = 18;             // Number of sides for the particle
-  private final int size = 20;           // Maximum size for particles
+  private final int size = 45;           // Maximum size for particles
 
   private double angle;                     // Angle to create the particle circle
   private double x;                         // Final x postion for the random particle
@@ -298,7 +298,7 @@ public class ParticleEffect
         points.add(new Point2D.Double(x,y));
       }
 
-      //setColor(gl, new Color(0, 0, 0), 50);
+      setColor(gl, new Color(0, 0, 0, 0), 0);
       angle = 2 * Math.PI * i / this.sides;
       this.x = x0 + particle.getSize() * Math.cos(angle);
       this.y = y0 + particle.getSize() * Math.sin(angle);
@@ -531,6 +531,8 @@ public class ParticleEffect
         }
     }
 
+  generateParticles();
+
     for(Particle particle: particles)
     {
       if(particle.isMovingToShape())
@@ -542,7 +544,7 @@ public class ParticleEffect
       particle.setIsMovingToShape(false);
     }
 
-    generateParticles();
+
 
 
 
@@ -569,7 +571,6 @@ public class ParticleEffect
     gl.glEnable(gl.GL_BLEND);
     gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
     gl.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, alpha / 255.0f);
-    gl.glDisable(gl.GL_BLEND);
 
   }
 

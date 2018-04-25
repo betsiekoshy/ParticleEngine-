@@ -92,7 +92,7 @@ public final class Buttons
   {
     Random rand = new Random();
 
-    if(numGamesPlayed > 3)
+    if(numGamesPlayed < 3)
     {
       for(int i = 0; i < numButtons; i++)
       {
