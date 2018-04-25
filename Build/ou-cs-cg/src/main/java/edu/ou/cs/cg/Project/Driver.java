@@ -200,6 +200,7 @@ public final class Driver implements GLEventListener
 		Random rand = new Random();
 		String name = "";
 		boolean gameOver = true;
+		boolean nextRound = true;
 		boolean stillActiveShapes = false;
 		renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 50), true, true);
 
@@ -209,20 +210,56 @@ public final class Driver implements GLEventListener
 			{
 				gameOver = false;
 			}
-		}
 
-		if(gameOver)
-		{
-			for(Shape shape: buttons.getShapes())
-			{
-				if(shape.isMixColor() || shape.isTwoTone())
-				{
-					stillActiveShapes = true;
-				}
+			if(shape.isActive()){
+				nextRound = false;
 			}
 		}
 
-		if(gameOver && !stillActiveShapes)
+		for(Particle particle: particleEffect.getParticles())
+		{
+			if(bounds.contains(particle.getPosition()))
+			{
+				gameOver = false;
+			}
+		}
+
+		for(Shape shape: buttons.getShapes())
+		{
+			if((shape.isMixColor() && shape.isActive()) || (shape.isTwoTone() && shape.isActive()))
+			{
+				int colorCountOne = particleEffect.getColorCount(shape.getColorOne());
+				int colorCountTwo = particleEffect.getColorCount(shape.getColorTwo());
+
+				if(gameOver)
+				{
+					if(colorCountOne >= shape.getOneColorCount() || colorCountTwo >= shape.getTwoColorCount())
+					{
+						gameOver = false;
+					}
+				}
+
+
+			}
+		}
+
+
+
+
+		// if(nextRound)
+		// {
+		// 	for(Shape shape: buttons.getShapes())
+		// 	{
+		// 		if((shape.isMixColor() && shape.isActive()) || (shape.isTwoTone() && shape.isActive()))
+		// 		{
+		// 			stillActiveShapes = true;
+		// 		}
+		// 	}
+		// }
+
+
+
+		if(nextRound)
 		{
 			gameOverCounter++;
 
@@ -231,7 +268,7 @@ public final class Driver implements GLEventListener
 
 		}
 
-		if(gameOver && stillActiveShapes)
+		if(gameOver)
 		{
 			gameOverCounter++;
 

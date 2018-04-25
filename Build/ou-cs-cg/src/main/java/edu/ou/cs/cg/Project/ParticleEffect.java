@@ -32,8 +32,7 @@ public class ParticleEffect
 
   private static int i;                     // Keeps track of how many particles are in the application so far
   private final int sides = 18;             // Number of sides for the particle
-  private final int minSize = 10;           // Minimum size for particles
-  private final int maxSize = 20;           // Maximum size for particles
+  private final int size = 20;           // Maximum size for particles
 
   private double angle;                     // Angle to create the particle circle
   private double x;                         // Final x postion for the random particle
@@ -65,11 +64,12 @@ public class ParticleEffect
     // At the beginning, create all the particles
     if(initial)
     {
+      particles = new ArrayList<Particle>();
       // Initialize and add randomized variables for all particles
       for(Shape shape: buttons.getShapes())
       {
         if(!shape.isMixColor() && !shape.isTwoTone()){
-          for(int i = 0; i < shape.getNumCount(); i++)
+          for(int i = 0; i < shape.getNumCount()/2; i++)
           {
             // Create a single particle
             Particle particle = new Particle();
@@ -112,7 +112,7 @@ public class ParticleEffect
 
   public void generateParticles()
   {
-    this.particles = new ArrayList<Particle>();
+    //this.particles = new ArrayList<Particle>();
 
     for(Shape shape: buttons.getShapes())
     {
@@ -161,7 +161,7 @@ public class ParticleEffect
 
     // Gives the Particle a Random Size
     //particle.setSize((rand.nextInt((this.maxSize - this.minSize) + 1) + this.minSize) / 1000.0);
-    particle.setSize(20 / 1000.0);
+    particle.setSize(this.size / 1000.0);
 
     // Gives a particle a mass
     particle.setMass(((float)(4 / 3 * Math.PI * Math.pow(particle.getSize(), 3.0))));
@@ -258,32 +258,54 @@ public class ParticleEffect
       g.draw(ball);
 */
     ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
-    // Begin drawing the circ;e
-    gl.glBegin(GL.GL_TRIANGLE_FAN);
+    // // Begin drawing the circ;e
+    // gl.glBegin(GL.GL_TRIANGLE_FAN);
+    //
+    // // Loops around in a circle depending on the sides set
+    // for(int i = 0; i <= this.sides; i++)
+    // {
+    //   // Figure out the angle of the particle
+    //   angle = 2 * Math.PI * i / this.sides;
+    //
+    //   if(i > this.sides/3){
+    //     setColor(gl, new Color(0, 0, 0, 125));
+    //   }
+    //   else {
+    //     setColor(gl, particle.getColor());
+    //   }
+    //
+    //   // Calculates the final x and y position of the particle
+    //   this.x = x0 + particle.getSize() * Math.cos(angle);
+    //   this.y = y0 + particle.getSize() * Math.sin(angle);
+    //
+    //   // Draws the section
+    //   gl.glVertex2d(x,y);
+    //   points.add(new Point2D.Double(x,y));
+    // }
+    //
+    // // Completed in drawing the particle
+    // gl.glEnd();
+    // particle.setPoints(points);
 
-    // Loops around in a circle depending on the sides set
+    gl.glBegin(GL.GL_TRIANGLE_STRIP);
+
     for(int i = 0; i <= this.sides; i++)
     {
-      // Figure out the angle of the particle
-      angle = 2 * Math.PI * i / this.sides;
-
-      // if(i > this.sides/3){
-      //   setColor(gl, new Color(0, 0, 0, 125));
-      // }
-      // else {
+      if(i % 2 == 0)
+      {
         setColor(gl, particle.getColor());
-    //  }
+        gl.glVertex2d(particle.getPosition().getX(), particle.getPosition().getY());
+        points.add(new Point2D.Double(x,y));
+      }
 
-      // Calculates the final x and y position of the particle
+      //setColor(gl, new Color(0, 0, 0), 50);
+      angle = 2 * Math.PI * i / this.sides;
       this.x = x0 + particle.getSize() * Math.cos(angle);
       this.y = y0 + particle.getSize() * Math.sin(angle);
-
-      // Draws the section
       gl.glVertex2d(x,y);
       points.add(new Point2D.Double(x,y));
     }
 
-    // Completed in drawing the particle
     gl.glEnd();
     particle.setPoints(points);
 
@@ -365,7 +387,7 @@ public class ParticleEffect
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY()));
               }
-              //break;
+              break;
             }
           }
         }
@@ -374,7 +396,6 @@ public class ParticleEffect
 
   public void moveTowardButton(Point2D.Double initialClick)
   {
-    		ArrayList<Particle> particles = this.getParticles();
 
     		for(Shape shape: buttons.getShapes())
         {
@@ -441,13 +462,42 @@ public class ParticleEffect
                 shape.setIsActive(false);
               }
 
-              if(shape.getNumCount() == 0 && shape.isTwoTone())
-              {
-                //TODO: explode new color of partilcles
-
-              }
-
     				}
+
+            if(shape.isTwoTone() && !shape.isActive())
+            {
+
+              //TODO: explode new color of partilcles
+              for(Shape mixShape: buttons.getShapes())
+              {
+                if(mixShape.isMixColor())
+                {
+
+                  for(int i = 0; i < mixShape.getNumCount()/2; i++)
+                  {
+                    Particle newParticle = new Particle();
+
+                    newParticle.setColor(mixShape.getColorOne());
+                    newParticle.setPosition(shape.getCenter());
+
+                    double angle = 2 * Math.PI * rand.nextInt(mixShape.getNumCount()) / mixShape.getNumCount();
+
+                    newParticle.setNewPosition(new Point2D.Double(newParticle.getPosition().getX() * (0.0055) * Math.cos(angle) * (rand.nextBoolean() ? -1 : 1),
+                                                               newParticle.getPosition().getY() * (0.0055)  * Math.sin(angle) * (rand.nextBoolean() ? -1 : 1)));
+
+                    newParticle.setSize(this.size / 1000.0);
+
+                    newParticle.setMass(((float)(4 / 3 * Math.PI * Math.pow(newParticle.getSize(), 3.0))));
+
+                    particles.add(newParticle);
+
+                    drawParticle(newParticle);
+
+                  }
+                  mixShape.setIsMixedColor(false);
+                }
+              }
+            }
     			}
     		}
 
@@ -466,15 +516,13 @@ public class ParticleEffect
   {
     boolean inside = false;
     Random rand = new Random();
-    ArrayList<Shape> shapes = buttons.getShapes();
-    ArrayList<Particle> particles = this.getParticles();
 
-    for(Shape shape: shapes)
+    for(Shape shape: buttons.getShapes())
     {
         shape.setDrawingType(2);
         shape.setTextColor(new Color(1f,1f,1f,1f));
 
-        for(Particle particle: particles)
+        for(Particle particle: this.getParticles())
         {
           if(shape.getShapeBounds().contains(particle.getPosition()))
           {
@@ -485,28 +533,32 @@ public class ParticleEffect
 
     for(Particle particle: particles)
     {
-      if(particle.isMovingToShape()){
+      if(particle.isMovingToShape())
+      {
         particle.setNewPosition(new Point2D.Double(particle.getPosition().getX() * (0.0055) * (rand.nextBoolean() ? -1 : 1),
                                                    particle.getPosition().getY() * (0.0055) * (rand.nextBoolean() ? -1 : 1)));
-      }
-
-      if(bounds.contains(particle.getPosition()))
-      {
-        inside = true;
       }
 
       particle.setIsMovingToShape(false);
     }
 
-    this.setParticles(particles);
-    buttons.setShapes(shapes);
+    generateParticles();
 
-    if(!inside)
-    {
-        generateParticles();
+
+
+  }
+
+  public int getColorCount(Color color)
+  {
+    int count = 0;
+
+    for(Particle particle: particles){
+      if(particle.getColor() == color){
+        count++;
+      }
     }
 
-
+    return count;
   }
   /**************************************************
            Creating the colors of the particle
@@ -514,7 +566,11 @@ public class ParticleEffect
    **************************************************/
   private void	setColor(GL2 gl, Color color, int alpha)
   {
+    gl.glEnable(gl.GL_BLEND);
+    gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA);
     gl.glColor4f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, alpha / 255.0f);
+    gl.glDisable(gl.GL_BLEND);
+
   }
 
   private void	setColor(GL2 gl, Color color)

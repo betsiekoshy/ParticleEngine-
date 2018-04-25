@@ -65,12 +65,12 @@ public final class Buttons
     8,
   };
 
-  public int getNumButtons() 
+  public int getNumButtons()
   {
     return this.numButtons;
   }
 
-  public void setNumButtons(int b) 
+  public void setNumButtons(int b)
   {
     this.numButtons = b;
   }
@@ -92,7 +92,7 @@ public final class Buttons
   {
     Random rand = new Random();
 
-    if(numGamesPlayed < 3)
+    if(numGamesPlayed > 3)
     {
       for(int i = 0; i < numButtons; i++)
       {
