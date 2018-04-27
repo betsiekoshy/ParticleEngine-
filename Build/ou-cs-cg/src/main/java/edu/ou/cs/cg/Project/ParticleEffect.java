@@ -26,25 +26,25 @@ public class ParticleEffect
 
   private static ArrayList<Particle> particles = new ArrayList<Particle>();    // All the particles in the application
 
-  private ArrayList<Color> colors;                      // Default colors of the particles (Red, Green, or Blue)
+  private ArrayList<Color> colors;          // Default colors of the particles (Red, Green, or Blue)
 
   private static Random rand;               // For Random Number generator
 
   private static int i;                     // Keeps track of how many particles are in the application so far
   private final int sides = 18;             // Number of sides for the particle
-  private final int size = 45;           // Maximum size for particles
+  private final int size = 45;              // Maximum size for particles
 
   private double angle;                     // Angle to create the particle circle
   private double x;                         // Final x postion for the random particle
   private double y;                         // Final y postion for the random particle
 
-  private Buttons buttons;
-  private GL2 gl;
-  private Component component;
+  private Buttons buttons;                  //Button class
+  private GL2 gl;                           //GL2
+  private Component component;              //canvas component
 
-  private Path2D.Double bounds;
+  private Path2D.Double bounds;             //window boundaries
 
-  private static boolean initial = true;
+  private static boolean initial = true;    //beginning of state
 
   public ParticleEffect(GL2 gl, Buttons buttons, Path2D.Double bounds, Component c)
   {
@@ -56,7 +56,6 @@ public class ParticleEffect
     NUMBER_OF_PARTICLES_OVERALL = 0;
 
     // Initilize the Color array for RGB
-    //this.RGB = new Color[]{new Color(255,0,0), new Color(0,255,0), new Color(0,0,255)};
     this.colors = buttons.getColors();
 
 
@@ -91,6 +90,7 @@ public class ParticleEffect
           }
         }
       }
+      //initialize is false
       initial = false;
     }
     else
@@ -102,22 +102,20 @@ public class ParticleEffect
         update(particle);
 
         // Redraw the particle
-
         drawParticle(particle);
-
       }
     }
-
   }
 
   public void generateParticles()
   {
-    //this.particles = new ArrayList<Particle>();
-
+    //loop through all the shape
     for(Shape shape: buttons.getShapes())
     {
+      //check to see what single shape is still active
       if(shape.isActive() && !shape.isMixColor() && !shape.isTwoTone())
       {
+        //create number of particles depending on shape
         for(int i = 0; i < shape.getNumCount(); i++)
         {
           // Create a single particle
@@ -232,81 +230,57 @@ public class ParticleEffect
    **************************************************/
   private void drawParticle(Particle particle)
   {
-      // Set the color of the particle
-      setColor(gl, particle.getColor());
+    //get the x and y positions of the particle
+    float x0 = (float)particle.getPosition().getX();
+    float y0 = (float)particle.getPosition().getY();
 
-      float x0 = (float)particle.getPosition().getX();
-      float y0 = (float)particle.getPosition().getY();
-/*
-      Graphics2D g = (Graphics2D)this.component.getGraphics();
-      g.setStroke(new BasicStroke(4));
-
-      //Define the ball
-      Ellipse2D ball = new Ellipse2D.Double(x0, y0, particle.getSize(), particle.getSize());
-
-      float x1 = x0 + (float)(particle.getSize());
-      float y1 = y0 + (float)(particle.getSize());
-			//Create paint to give the illusion of light
-      float[] f = {(float)particle.getSize()/4, (float)particle.getSize()/2};
-      Color[] c = {Color.WHITE, particle.getColor()};
-			RadialGradientPaint	b =
-					new RadialGradientPaint(particle.getPosition(), (float)particle.getSize()/2, f, c);
-
-			//Paint the ball
-			g.setPaint(b);
-			g.fill(ball);
-      g.draw(ball);
-*/
+    //all the points that creates the particle
     ArrayList<Point2D.Double> points = new ArrayList<Point2D.Double>();
-    // // Begin drawing the circ;e
-    // gl.glBegin(GL.GL_TRIANGLE_FAN);
-    //
-    // // Loops around in a circle depending on the sides set
-    // for(int i = 0; i <= this.sides; i++)
-    // {
-    //   // Figure out the angle of the particle
-    //   angle = 2 * Math.PI * i / this.sides;
-    //
-    //   if(i > this.sides/3){
-    //     setColor(gl, new Color(0, 0, 0, 125));
-    //   }
-    //   else {
-    //     setColor(gl, particle.getColor());
-    //   }
-    //
-    //   // Calculates the final x and y position of the particle
-    //   this.x = x0 + particle.getSize() * Math.cos(angle);
-    //   this.y = y0 + particle.getSize() * Math.sin(angle);
-    //
-    //   // Draws the section
-    //   gl.glVertex2d(x,y);
-    //   points.add(new Point2D.Double(x,y));
-    // }
-    //
-    // // Completed in drawing the particle
-    // gl.glEnd();
-    // particle.setPoints(points);
 
+    // Set the color of the particle
+    setColor(gl, particle.getColor());
+
+    //begin drawing the particle
     gl.glBegin(GL.GL_TRIANGLE_STRIP);
 
+    //create the particles depending on howmany sides it has
     for(int i = 0; i <= this.sides; i++)
     {
+      //if the point is in the center
       if(i % 2 == 0)
       {
+        //set the color of the particle
         setColor(gl, particle.getColor());
+
+        //draw the vertext of the particle
         gl.glVertex2d(particle.getPosition().getX(), particle.getPosition().getY());
+
+        //add the point to the points
         points.add(new Point2D.Double(x,y));
       }
 
+      //if the point is the outside of the particleEffect
+      //set the color of it black and transparent
       setColor(gl, new Color(0, 0, 0, 0), 0);
+
+      //find the angle
       angle = 2 * Math.PI * i / this.sides;
+
+      //get the x and y position
       this.x = x0 + particle.getSize() * Math.cos(angle);
       this.y = y0 + particle.getSize() * Math.sin(angle);
+
+      //draw the vertext
       gl.glVertex2d(x,y);
+
+      //add the point to points
       points.add(new Point2D.Double(x,y));
     }
 
+    //end drawing shape
     gl.glEnd();
+
+    //add the points to particle
     particle.setPoints(points);
 
   }
@@ -316,7 +290,10 @@ public class ParticleEffect
    *****************************************************/
   public void update(Particle particle)
   {
+    //check the boundaries of the particle
     checkBoundries(particle);
+
+    //get the new position of the particle
     particle.setPosition(add(particle.getPosition(), particle.getNewPosition()));
   }
 
@@ -325,8 +302,13 @@ public class ParticleEffect
   *****************************************************/
   public Point2D.Double add(Point2D.Double p1, Point2D.Double p2)
   {
+    //initalize the new location
     Point2D.Double newLocation = new Point2D.Double();
+
+    //add point one and point two to get the new location
     newLocation = new Point2D.Double(p1.getX() + p2.getX(), p1.getY() + p2.getY());
+
+    //return new location
     return newLocation;
   }
 
@@ -355,34 +337,38 @@ public class ParticleEffect
       particle.setInside(true);
     }
 
+    //check particles that are not moving to a shape and is alive
     if(!particle.isMovingToShape() && particle.isAlive())
     {
         //Intialize lists of button centers and bounds
         ArrayList<Shape> shapes = buttons.getShapes();
 
+        //loop thorugh all the shapes
         for(Shape shape: shapes)
         {
-
           //Get all all points that create the bounds of the particle
           for(Point2D.Double point: particle.getPoints())
           {
             //Check if any point collids with the button bounds
             if(shape.getShapeBounds().contains(point) && shape.isActive())
             {
-              //Set new position if particles collid with buttons
+              //Set new position if particles collid to the left of the shape
               if (shape.getCenter().getX() + shape.getSize() >= point.getX())
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() * - 1, particle.getNewPosition().getY()));
               }
+              //Set new position if particles collid to the right of the shape
               else
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX() , particle.getNewPosition().getY()));
               }
 
+              //Set new position if particles collid to the bottom of the shape
               if (shape.getCenter().getY() + shape.getSize() >= point.getY())
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY() * -1));
               }
+              //Set new position if particles collid to the top of the shape
               else
               {
                 particle.setNewPosition(new Point2D.Double(particle.getNewPosition().getX(), particle.getNewPosition().getY()));
@@ -396,159 +382,232 @@ public class ParticleEffect
 
   public void moveTowardButton(Point2D.Double initialClick)
   {
+    //loop through all the shsapes
+  	for(Shape shape: buttons.getShapes())
+    {
+      //check if the user clicked inside the shape and if it is active
+  		if(shape.getShapeBounds().contains(initialClick) && shape.isActive())
+  		{
+        //set drawing type of the shape, filled
+  			shape.setDrawingType(6);
 
-    		for(Shape shape: buttons.getShapes())
-        {
-    			if(shape.getShapeBounds().contains(initialClick) && shape.isActive())
-    			{
-    				shape.setDrawingType(6);
-    				shape.setTextColor(new Color(0f,0f,0f,1f));
+        //set number counter text color to black
+  			shape.setTextColor(new Color(0f,0f,0f,1f));
 
-    				for(Particle particle: this.getParticles() )
-    				{
-    					if((((particle.getColor() == shape.getColorOne() && (shape.getOneColorCount() != 0 || !shape.isTwoTone())) || (particle.getColor() == shape.getColorTwo()) && shape.getTwoColorCount() !=0)) && particle.isAlive() && shape.getNumCount() != 0)
-    					{
-    						particle.setIsMovingToShape(true);
+        //loop through all the particles
+  			for(Particle particle: this.getParticles())
+  			{
+          //check if the particle is the same color as the shapes (single or two colored)
+          //checks if particle is alive and shape is active
+  				if((((particle.getColor() == shape.getColorOne() && (shape.getOneColorCount() != 0 || !shape.isTwoTone())) || (particle.getColor() == shape.getColorTwo()) && shape.getTwoColorCount() !=0)) && particle.isAlive() && shape.getNumCount() != 0)
+  				{
+            //set particle is moving towards a shape
+  					particle.setIsMovingToShape(true);
 
-    						double deltaX = shape.getCenter().getX() - particle.getPosition().getX();
-    						double deltaY = shape.getCenter().getY() - particle.getPosition().getY();
+            //get vector positions from particle to shape
+  					double deltaX = shape.getCenter().getX() - particle.getPosition().getX();
+  					double deltaY = shape.getCenter().getY() - particle.getPosition().getY();
 
-    						double angle = Math.atan2( deltaY, deltaX ) ;
+            //find the angle direction the shape is from particle
+  					double angle = Math.atan2( deltaY, deltaX ) ;
 
-    						double currentX = particle.getPosition().getX() * (0.075) * Math.cos( angle );
-    						double currentY = particle.getPosition().getY() * (0.075) * Math.sin( angle );
+            //add the angle to the particle to get the particle to move towards the shape
+  					double currentX = particle.getPosition().getX() * (0.075) * Math.cos( angle );
+  					double currentY = particle.getPosition().getY() * (0.075) * Math.sin( angle );
 
-    						particle.setNewPosition(new Point2D.Double(currentX, currentY));
-    					}
+            //set the new position of the particle
+  					particle.setNewPosition(new Point2D.Double(currentX, currentY));
+  				}
 
-    					if(shape.getShapeBounds().contains(particle.getPosition()) && (particle.getColor() == shape.getColorOne() || particle.getColor() == shape.getColorTwo()) )
-    					{
-    						if(shape.getNumCount() != 0)
-                {
-                  if(shape.isTwoTone())
-                  {
-                    if(particle.getColor() == shape.getColorOne() && shape.getOneColorCount() != 0)
-                    {
-                      shape.setOneColorCount(shape.getOneColorCount() - 1);
-                      particle.setPosition(shape.getCenter());
-                      particle.setIsAlive(false);
-                    }
-
-                    if(particle.getColor() == shape.getColorTwo() && shape.getTwoColorCount() != 0)
-                    {
-                      shape.setTwoColorCount(shape.getTwoColorCount() - 1);
-                      particle.setPosition(shape.getCenter());
-                      particle.setIsAlive(false);
-                    }
-
-                    shape.setNumCount(shape.getOneColorCount()  + shape.getTwoColorCount());
-                  }
-                  else
-                  {
-                    shape.setNumCount(shape.getNumCount() - 1);
-                    particle.setPosition(shape.getCenter());
-                    particle.setIsAlive(false);
-                  }
-    						}
-                else
-                {
-    							shape.setNumCount(0);
-    						}
-    					}
-
-              if(shape.getNumCount() == 0)
-              {
-                particle.setIsMovingToShape(false);
-                shape.setIsActive(false);
-              }
-
-    				}
-
-            if(shape.isTwoTone() && !shape.isActive())
+          //check if a particle is inside the shape and checks if the particle is the same color as the shape
+  				if(shape.getShapeBounds().contains(particle.getPosition()) && (particle.getColor() == shape.getColorOne() || particle.getColor() == shape.getColorTwo()) )
+  				{
+            //if the shape number counter is not zero (dead)
+  					if(shape.getNumCount() != 0)
             {
-
-              //TODO: explode new color of partilcles
-              for(Shape mixShape: buttons.getShapes())
+              //check if the shape is two toned
+              if(shape.isTwoTone())
               {
-                if(mixShape.isMixColor())
+                //if the particle is the same color as the first color of the shape
+                //and the number count for the first color is not 0
+                if(particle.getColor() == shape.getColorOne() && shape.getOneColorCount() != 0)
                 {
+                  //decrease the first color count
+                  shape.setOneColorCount(shape.getOneColorCount() - 1);
 
-                  for(int i = 0; i < mixShape.getNumCount()/2; i++)
-                  {
-                    Particle newParticle = new Particle();
+                  //set the new position of the particle to the center of the shape
+                  particle.setPosition(shape.getCenter());
 
-                    newParticle.setColor(mixShape.getColorOne());
-                    newParticle.setPosition(shape.getCenter());
-
-                    double angle = 2 * Math.PI * rand.nextInt(mixShape.getNumCount()) / mixShape.getNumCount();
-
-                    newParticle.setNewPosition(new Point2D.Double(newParticle.getPosition().getX() * (0.0055) * Math.cos(angle) * (rand.nextBoolean() ? -1 : 1),
-                                                               newParticle.getPosition().getY() * (0.0055)  * Math.sin(angle) * (rand.nextBoolean() ? -1 : 1)));
-
-                    newParticle.setSize(this.size / 1000.0);
-
-                    newParticle.setMass(((float)(4 / 3 * Math.PI * Math.pow(newParticle.getSize(), 3.0))));
-
-                    particles.add(newParticle);
-
-                    drawParticle(newParticle);
-
-                  }
-                  mixShape.setIsMixedColor(false);
+                  //particle is inside shape so it is not dead
+                  particle.setIsAlive(false);
                 }
+
+                //if the particle is the same color as the second color of the shape
+                //and the number count for the second color is not 0
+                if(particle.getColor() == shape.getColorTwo() && shape.getTwoColorCount() != 0)
+                {
+                  //decrease the second color count
+                  shape.setTwoColorCount(shape.getTwoColorCount() - 1);
+
+                  //set the new position of the particle to the center of the shape
+                  particle.setPosition(shape.getCenter());
+
+                  //particle is inside shape so it is not dead
+                  particle.setIsAlive(false);
+                }
+
+                //set the new total number count of the two toned shape
+                shape.setNumCount(shape.getOneColorCount()  + shape.getTwoColorCount());
               }
+              //if it is a regular single color shape
+              else
+              {
+                //decrease the color count
+                shape.setNumCount(shape.getNumCount() - 1);
+
+                //set the new position of the particle to the center of the shape
+                particle.setPosition(shape.getCenter());
+
+                //particle is inside shape so it is not dead
+                particle.setIsAlive(false);
+              }
+          }
+          else
+          {
+            //set shape count to zero
+            shape.setNumCount(0);
+          }
+        }
+
+        //if shape count is zero
+        if(shape.getNumCount() == 0)
+        {
+          //set particle moving to it false
+          particle.setIsMovingToShape(false);
+
+          //set shape active false
+          shape.setIsActive(false);
+        }
+
+      }
+
+        //check if shape is twotone and is not active
+        //this is where when the two tone shape disappears
+        //it will spawn the new special color
+        if(shape.isTwoTone() && !shape.isActive())
+        {
+          //loop through all the shape
+          for(Shape mixShape: buttons.getShapes())
+          {
+            //find the mix color shape
+            if(mixShape.isMixColor())
+            {
+              //create new color particles of the mix color
+              for(int i = 0; i < mixShape.getNumCount()/2; i++)
+              {
+                //intialize particle
+                Particle newParticle = new Particle();
+
+                //set color of the particle
+                newParticle.setColor(mixShape.getColorOne());
+
+                //set beginning of the particle position to center of the shape
+                newParticle.setPosition(shape.getCenter());
+
+                //find a good random angle the particle will burst out towads
+                double angle = 2 * Math.PI * rand.nextInt(mixShape.getNumCount()) / mixShape.getNumCount();
+
+                //set the new position of the particle
+                newParticle.setNewPosition(new Point2D.Double(newParticle.getPosition().getX() * (0.0055) * Math.cos(angle) * (rand.nextBoolean() ? -1 : 1),
+                                                           newParticle.getPosition().getY() * (0.0055)  * Math.sin(angle) * (rand.nextBoolean() ? -1 : 1)));
+
+                //set the size of the particle
+                newParticle.setSize(this.size / 1000.0);
+
+                //set the mass of the particle
+                newParticle.setMass(((float)(4 / 3 * Math.PI * Math.pow(newParticle.getSize(), 3.0))));
+
+                //add the new particle to particles
+                particles.add(newParticle);
+
+                //draw the particles
+                drawParticle(newParticle);
+
+              }
+              //set mix shape to false so the random particle waves will now spawn the new color
+              mixShape.setIsMixedColor(false);
             }
-    			}
-    		}
+          }
+        }
+  		}
+  	}
 
-    		ArrayList<Particle> aliveParticles = new ArrayList<Particle>();
-    		for(Particle particle: this.getParticles() )
-    		{
-    			if(particle.isAlive()){
-    				aliveParticles.add(particle);
-    			}
-    		}
+    //initlize array of for alive particles
+  	ArrayList<Particle> aliveParticles = new ArrayList<Particle>();
 
-    		this.setParticles(aliveParticles);
+    //loop through all the particles
+  	for(Particle particle: this.getParticles() )
+  	{
+      //check if the particle is alive
+  		if(particle.isAlive())
+      {
+        //add the alive particle to the alive array
+  			aliveParticles.add(particle);
+  		}
+  	}
+
+    //set thea live partticle array to the intial particle array
+  	this.setParticles(aliveParticles);
   }
 
   public void updateOnRelease()
   {
+    //intialize variables
     boolean inside = false;
     Random rand = new Random();
 
+    //loop through all the shape
     for(Shape shape: buttons.getShapes())
     {
-        shape.setDrawingType(2);
-        shape.setTextColor(new Color(1f,1f,1f,1f));
+      //set the drawing type to outline
+      shape.setDrawingType(2);
 
-        for(Particle particle: this.getParticles())
+      //set the shape number counter text color white
+      shape.setTextColor(new Color(1f,1f,1f,1f));
+
+      //looop through all the particles
+      for(Particle particle: this.getParticles())
+      {
+        //check if the particle is still inside the screen
+        if(shape.getShapeBounds().contains(particle.getPosition()))
         {
-          if(shape.getShapeBounds().contains(particle.getPosition()))
-          {
-            particle.setIsAlive(false);
-          }
+          //set the particle life as false
+          particle.setIsAlive(false);
         }
+      }
     }
 
-  generateParticles();
+    //this generates a new wave of particles
+    generateParticles();
 
+    //loop through all particles
     for(Particle particle: particles)
     {
+      //check if particle is moving towareds a shape
       if(particle.isMovingToShape())
       {
+        //set the new speed of the particle
         particle.setNewPosition(new Point2D.Double(particle.getPosition().getX() * (0.0055) * (rand.nextBoolean() ? -1 : 1),
                                                    particle.getPosition().getY() * (0.0055) * (rand.nextBoolean() ? -1 : 1)));
       }
-
+      //set moving to shape as false
       particle.setIsMovingToShape(false);
     }
-
-
-
-
-
   }
+
+  /**************************************************
+           Getters for particle effect class
+   **************************************************/
 
   public int getColorCount(Color color)
   {
@@ -559,8 +618,25 @@ public class ParticleEffect
         count++;
       }
     }
-
     return count;
+  }
+
+  public ArrayList<Particle>  getParticles()
+  {
+    return this.particles;
+  }
+
+  /**************************************************
+           Setters for particle effect class
+   **************************************************/
+
+  public void setParticles(ArrayList<Particle> particles)
+  {
+    this.particles = particles;
+  }
+
+  public void setInitial(boolean initial){
+    this.initial = initial;
   }
   /**************************************************
            Creating the colors of the particle
@@ -579,18 +655,5 @@ public class ParticleEffect
     setColor(gl, color, 255);
   }
 
-  public ArrayList<Particle>  getParticles()
-  {
-    return this.particles;
-  }
-
-  public void setParticles(ArrayList<Particle> particles)
-  {
-    this.particles = particles;
-  }
-
-  public void setInitial(boolean initial){
-    this.initial = initial;
-  }
 
 }

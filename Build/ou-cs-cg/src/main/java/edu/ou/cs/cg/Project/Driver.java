@@ -6,20 +6,17 @@ import edu.ou.cs.cg.Project.Buttons;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
+import java.util.*;
 import java.util.Random;
 import javax.swing.*;
 import javax.media.opengl.*;
+import javax.media.opengl.awt.*;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.gl2.GLUT;
-
-
 import java.text.DecimalFormat;
-import java.util.*;
-
-import javax.media.opengl.awt.*;
 
 
 
@@ -57,9 +54,9 @@ public final class Driver implements GLEventListener
 		"Fantastic!",
 		"Awesome!",
 		"Marvelous!",
-		//"Wowzers!",
-		//"Mind-Boggling!",
-		//"Astounding"
+		"Wowzers!",
+		"Mind-Boggling!",
+		"Astounding"
 	};
 
 
@@ -84,9 +81,6 @@ public final class Driver implements GLEventListener
 				}
 			});
 
-		//canvas.addGLEventListener(new Driver());
-
-
 		Driver driver = new Driver(canvas);
 	}
 
@@ -100,7 +94,7 @@ public final class Driver implements GLEventListener
 		animator = new FPSAnimator(canvas, DEFAULT_FRAMES_PER_SECOND);
 		animator.start();
 
-
+		//Intialize the mouse handler
 		mouseHandler = new MouseHandler(this);
 	}
 
@@ -122,10 +116,6 @@ public final class Driver implements GLEventListener
 	public Path2D.Double getBounds(){
 		return this.bounds;
 	}
-
-
-	// Override Methods (GLEventListener)
-
 
     public void		init(GLAutoDrawable drawable)
 	{
@@ -162,24 +152,26 @@ public final class Driver implements GLEventListener
 		GL2		gl = drawable.getGL().getGL2();
 
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);		// Clear the buffer
-		//gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 		gl.glShadeModel(GL2.GL_SMOOTH);
-		//gl.glEnable(GL.GL_TEXTURE_2D);
-
 		gl.glMatrixMode(gl.GL_PROJECTION);
 		gl.glLoadIdentity();
+
+		//Set the ortho view for the viewport
 		gl.glOrtho(0.0f, 2f, 2f, 0.0f, 0.0f, 1.0f);
+
 		//draw the bounds of the screen
 		drawBounds(gl);
 
-		//create the buttons
+		//create the buttons/shapes
 		buttons = new Buttons(gl, numGamesPlayed);
 
 		//draw the particles
 		particleEffect = new ParticleEffect(gl, buttons, bounds, this.getComponent());
 
+		//Display the number counter for the shapes
 		displayNumberCounter();
 
+		//display game over or next stage quotes
 		displayAchievement();
 
 	}
@@ -197,99 +189,129 @@ public final class Driver implements GLEventListener
 
 	private void	displayAchievement()
 	{
+		//intialize varibles
 		Random rand = new Random();
 		String name = "";
 		boolean gameOver = true;
 		boolean nextRound = true;
 		boolean stillActiveShapes = false;
+		boolean particlesAlive = false;
+		boolean singleShapesActive = false;
+
+		//set font size and type
 		renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 50), true, true);
 
+		//loop through all the shapes
 		for(Shape shape: buttons.getShapes())
 		{
-			if(shape.isActive() && !shape.isMixColor() && !shape.isTwoTone())
+			//if there are still any shape active
+			if(shape.isActive())
 			{
-				gameOver = false;
-			}
-
-			if(shape.isActive()){
+				//user do not move to the next stage yet
 				nextRound = false;
-			}
-		}
-
-		for(Particle particle: particleEffect.getParticles())
-		{
-			if(bounds.contains(particle.getPosition()))
-			{
-				gameOver = false;
-			}
-		}
-
-		for(Shape shape: buttons.getShapes())
-		{
-			if((shape.isMixColor() && shape.isActive()) || (shape.isTwoTone() && shape.isActive()))
-			{
-				int colorCountOne = particleEffect.getColorCount(shape.getColorOne());
-				int colorCountTwo = particleEffect.getColorCount(shape.getColorTwo());
-
-				if(gameOver)
-				{
-					if(colorCountOne >= shape.getOneColorCount() || colorCountTwo >= shape.getTwoColorCount())
-					{
-						gameOver = false;
-					}
-				}
-
-
+				break;
 			}
 		}
 
 
-
-
-		// if(nextRound)
-		// {
-		// 	for(Shape shape: buttons.getShapes())
-		// 	{
-		// 		if((shape.isMixColor() && shape.isActive()) || (shape.isTwoTone() && shape.isActive()))
-		// 		{
-		// 			stillActiveShapes = true;
-		// 		}
-		// 	}
-		// }
-
-
-
+		//if users move on to the next stage
 		if(nextRound)
 		{
+			//increase dispaly text counter
 			gameOverCounter++;
 
 			//Intilalize String to store name
 			name = compliments[complimentCounter];
 
+			//gameOver is false
+			gameOver = false;
+			break;
 		}
 
+
+		//loop through all the shapes
+		for(Shape shape: buttons.getShapes())
+		{
+			//check the shapes that are a single color, to see if it still exist
+			if(shape.isActive() && !shape.isMixColor() && !shape.isTwoTone())
+			{
+				//if they still exist, the game is not over
+				singleShapesActive = true;
+
+				//set gameover to false
+				gameOver = false;
+				break;
+			}
+		}
+
+		if(!singleShapesActive)
+		{
+			//loop through all the particles
+			for(Particle particle: particleEffect.getParticles())
+			{
+				//check if there are any particles left inside the window boundaries
+				if(bounds.contains(particle.getPosition()))
+				{
+					//if there is, the game is not over
+					gameOver = false;
+
+					//set particles alive true
+					particlesAlive = true;
+					break;
+				}
+			}
+		}
+
+		if(!singleShapesActive && particlesAlive)
+		{
+			//loop through all the shapes
+			for(Shape shape: buttons.getShapes())
+			{
+				//check the shapes that are two toned
+				if(shape.isActive() && shape.isTwoTone())
+				{
+					//if they still exist the game is over
+					gameOver = true;
+					break;
+				}
+			}
+		}
+
+		//If users get a game over
 		if(gameOver)
 		{
+			//increase dispaly text counter
 			gameOverCounter++;
 
 			//Intilalize String to store name
 			name = "GameOver";
+
+			//Game rests back to zero
 			numGamesPlayed = 0;
+			complimentCounter = 0;
 		}
 
-		if(gameOverCounter == 200)
+		//How long the display notification stays for
+		if(gameOverCounter == 100)
 		{
+			//Shows a random compliment
+			//if its the last one in the array, go back to the first one
 			if(complimentCounter == compliments.length - 1)
 			{
 				complimentCounter = 0;
 			}
 			else
 			{
+				//Different compliment each game
 				complimentCounter++;
 			}
 
+			//Game over so we are back at the beignning
+			//set values for intial true
 			buttons.setInitial(true);
 			particleEffect.setInitial(true);
+
+			//reset game counter and num games play to zero
 			gameOverCounter = 0;
 			numGamesPlayed++;
 		}
@@ -310,10 +332,13 @@ public final class Driver implements GLEventListener
 
 	private void	displayNumberCounter()
 	{
+		//set font for the text render
 		renderer = new TextRenderer(new Font("Serif", Font.PLAIN, 18), true, true);
 
+		//loop through all shapes
 		for(Shape shape: buttons.getShapes())
 		{
+			//check if shape is still active
 			if(shape.isActive())
 			{
 				//Intilalize String to store name

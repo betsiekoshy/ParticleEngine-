@@ -17,25 +17,26 @@ import java.lang.Object;
 
 public class Particle
 {
-  private Color color;                   // Color of the particle
+  private Color color;                    // Color of the particle
 
-  private boolean isAlive;               //Checks to see if the particle is still alive
-  private boolean inside;
-  private boolean movingToShape;
+  private boolean isAlive;                //Checks to see if the particle is still alive
+  private boolean inside;                 //Checks to see if particle is inside the boundaries
+  private boolean movingToShape;          //Checks to see if the particle is moving towards a shape
 
   private Point2D.Double position;       // Position of the Particle
-  private Point2D.Double newPosition;    // Position of the Particle
-  private Point2D.Double speed;
+  private Point2D.Double newPosition;    // New Position of the Particle
+  private Point2D.Double speed;          //speed of the particle
 
-  private ArrayList<Point2D.Double> points;
+  private ArrayList<Point2D.Double> points;   //All points that makes up the particle
 
   private double size;                   // How large the particle will be
-  private double mass;
+  private double mass;                   // mass of the particle
 
-  private Path2D.Double bounds;
+  private Path2D.Double bounds;         // window bounds
 
   public Particle()
   {
+    //Intialize all varaibles
     this.color = null;
 
     this.isAlive = true;

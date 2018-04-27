@@ -55,9 +55,8 @@ public final class MouseHandler extends MouseAdapter
 
 	public void		mouseReleased(MouseEvent e)
 	{
+		//call to the method updateonRealease in the particle effects class
 		driver.particleEffect.updateOnRelease();
-		
-
 	}
 
 	//**********************************************************************
@@ -68,6 +67,7 @@ public final class MouseHandler extends MouseAdapter
 	{
 		initialClick = calcCoordinatesIndriver(e.getX(), e.getY());
 
+		//call to the method moveTowards buttons from the particle effects class
 		driver.particleEffect.moveTowardButton(initialClick);
 	}
 

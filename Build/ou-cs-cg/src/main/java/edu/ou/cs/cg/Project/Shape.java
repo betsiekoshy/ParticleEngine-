@@ -16,30 +16,31 @@ import com.jogamp.opengl.util.gl2.GLUT;
 
 public final class Shape
 {
-  private int sides;
-  private int numCount;
-  private int drawingType;
-  private int oneColorCount;
-  private int twoColorCount;
+  private int sides;                    //number of sides the shape has
+  private int numCount;                 //number of particles shape needs to consume
+  private int drawingType;              //drawying type of the shape (outline or filled)
+  private int oneColorCount;            //number of particles of this color (first color) the shape needs to consume
+  private int twoColorCount;            //number of particles of this color (second color) the shape needs to consume
 
-  private double size = 0.14;;
-  private double mass;
+  private double size = 0.14;;          //size of the shape
+  private double mass;                  // mass of the shape
 
-  private Color colorOne;
-  private Color colorTwo;
-  private Color textColor;
+  private Color colorOne;               //color of the shape
+  private Color colorTwo;               //second color of the shape (if the shape is two toned)
+  private Color textColor;              //number text color
 
-  private Point2D.Double centerPoint;
-  private Point2D.Double textPoint;
-  private Path2D.Double shapeBounds;
+  private Point2D.Double centerPoint;   //center point of the shape
+  private Point2D.Double textPoint;     //position of the number
+  private Path2D.Double shapeBounds;    //boundaries of the shape
 
-  private boolean isActive;
-  private boolean twoTone;
-  private boolean isMixColor;
+  private boolean isActive;             //checks if the shape is active
+  private boolean twoTone;              //check if the shape is two toned
+  private boolean isMixColor;           //check if the shape is a special color
 
 
   public Shape(int sides, Color colorOne, Color colorTwo, Point2D.Double centerPoint, Point2D.Double textPoint)
   {
+    //Intialize all variables
     Random rand = new Random();
     this.sides = sides;
     this.colorOne = colorOne;
@@ -56,6 +57,11 @@ public final class Shape
     this.numCount = (10 + (int)(Math.random() * ((30- 10) + 1)));
     this.textColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
   }
+
+
+  //**********************************************************************
+	// Setter for shape class
+	//**********************************************************************
 
   public void setShapeBounds(Path2D.Double shapeBounds)
   {
@@ -91,10 +97,16 @@ public final class Shape
     this.isMixColor = isMixColor;
   }
 
+  public void setDrawingType(int drawingType)
+  {
+    this.drawingType = drawingType;
+  }
+
 
   //**********************************************************************
-	// Public Class Methods (Event Handling)
+	// Getters for shape class
 	//**********************************************************************
+  
   public int getNumCount()
   {
     return numCount;
@@ -108,11 +120,6 @@ public final class Shape
   public double getSize()
   {
     return this.size;
-  }
-
-  public void setDrawingType(int drawingType)
-  {
-    this.drawingType = drawingType;
   }
 
   public int getDrawingType()
@@ -160,6 +167,11 @@ public final class Shape
     return textPoint;
   }
 
+  public Path2D.Double getShapeBounds()
+  {
+    return this.shapeBounds;
+  }
+
   public boolean isActive()
   {
     return isActive;
@@ -173,11 +185,6 @@ public final class Shape
   public boolean isMixColor()
   {
     return isMixColor;
-  }
-
-  public Path2D.Double getShapeBounds()
-  {
-    return this.shapeBounds;
   }
 
 }
